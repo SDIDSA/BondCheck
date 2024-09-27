@@ -1,0 +1,14 @@
+{
+  "background_primary": "#FFFFFFFF",
+  "background_secondary": "#EEEEEEFF",
+  "background_tertiary": "#DDDDDDFF",
+
+  "text_primary" : "#272224FF",
+  "text_secondary" : "#735d62FF",
+  "text_muted" : "#6e6d6dFF",
+  "text_error": "#b51200FF",
+  "text_positive" : "#27AE60FF",
+
+  "accent_1" : "#E7184CFF",
+  "accent_2" : "#d0c0caFF"
+}

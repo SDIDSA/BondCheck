@@ -1,0 +1,127 @@
+package com.sdidsa.bondcheck.abs.components.controls.scratches.loading;
+
+import android.content.Context;
+import android.view.Gravity;
+import android.view.View;
+
+import com.sdidsa.bondcheck.abs.animation.view.scale.ScaleXYAnimation;
+import com.sdidsa.bondcheck.abs.components.layout.StackPane;
+
+import com.sdidsa.bondcheck.abs.animation.base.Animation;
+import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
+import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
+import com.sdidsa.bondcheck.abs.animation.view.AlphaAnimation;
+import com.sdidsa.bondcheck.abs.animation.view.position.TranslateXAnimation;
+import com.sdidsa.bondcheck.abs.components.controls.shape.Rectangle;
+import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
+import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+
+public class LinearLoading extends HBox implements Loading{
+    private static final int count = 4;
+    private final Rectangle[] rectangles;
+    private final ParallelAnimation loader;
+    private final float size;
+
+    public LinearLoading(Context owner) {
+        this(owner, 16);
+    }
+
+    public LinearLoading(Context owner, float size) {
+        super(owner);
+        setAlpha(.6f);
+        this.size = size;
+
+        rectangles = new Rectangle[count];
+
+        StackPane.LayoutParams params = new StackPane.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
+        setLayoutParams(params);
+
+        setHorizontalGravity(Gravity.CENTER);
+
+        for(int i = 0; i < count; i++) {
+            rectangles[i] = new Rectangle(owner);
+            rectangles[i].setSize(size, size);
+            rectangles[i].setRadius(size);
+            addView(rectangles[i]);
+        }
+
+        float shift = ContextUtils.dipToPx(-(size * 2), owner);
+
+        loader = new ParallelAnimation(500)
+                .addAnimation(new AlphaAnimation(rectangles[0],0, 1))
+                .addAnimation(new ScaleXYAnimation(rectangles[0],.5f, 1))
+                .addAnimation(new AlphaAnimation(rectangles[count -1], 1, 0))
+                .addAnimation(new ScaleXYAnimation(rectangles[count - 1], 1, 0.5f))
+                .setInterpolator(Interpolator.EASE_OUT).setCycleCount(Animation.INDEFINITE);
+        for(int i = 0; i < count; i++) {
+            loader.addAnimation(new TranslateXAnimation(rectangles[i], shift, 0));
+        }
+
+        for(int i = 1; i < count; i++) {
+            ContextUtils.setMarginLeft(rectangles[i], owner, size);
+        }
+
+        setTranslationX((-shift / 2) * ContextUtils.getLocaleDirection(owner));
+
+        setSize(size);
+    }
+
+    private void setSize(float size) {
+        float shift = ContextUtils.dipToPx(-(size * 2), owner);
+
+        for(Rectangle rect : rectangles) {
+            rect.setTranslationX(shift * ContextUtils.getLocaleDirection(owner));
+        }
+        rectangles[0].setAlpha(0);
+        rectangles[count - 1].setAlpha(1);
+
+        setTranslationX((-shift / 2) * ContextUtils.getLocaleDirection(owner));
+
+        if(loader != null && loader.isRunning()) {
+            loader.stop();
+        }
+    }
+
+    private boolean running = false;
+
+    @Override
+    protected void onAttachedToWindow() {
+        if(running)
+            loader.start();
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if(running)
+            loader.stop();
+        super.onDetachedFromWindow();
+    }
+
+    public void startLoading() {
+        setSize(size);
+        running = true;
+        loader.start();
+    }
+
+    public void stopLoading() {
+        running = false;
+        loader.stop();
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    public void setColor(int c) {
+        for(Rectangle r : rectangles) {
+            r.setFill(c);
+        }
+    }
+
+    public void setFill(int fill) {
+        setColor(fill);
+    }
+}
