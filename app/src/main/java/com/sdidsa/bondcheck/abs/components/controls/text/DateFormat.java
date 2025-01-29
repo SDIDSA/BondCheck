@@ -47,12 +47,12 @@ public interface DateFormat {
         }else if(minutes == 1) {
             return locale.get("time_1_minute_ago");
         } else if (minutes < 60) {
-            return locale.get("time_x_minutes_ago")
+            return locale.get("time_x_minutes_ago" + (minutes <= 10 ? "_sub_10" : ""))
                     .replace("{$0}", Long.toString(minutes));
         }else if(hours == 1) {
             return locale.get("time_1_hour_ago");
         } else if (hours < 12) {
-            return locale.get("time_x_hours_ago")
+            return locale.get("time_x_hours_ago" + (hours <= 10 ? "_sub_10" : ""))
                     .replace("{$0}", Long.toString(hours));
         } else if(sameDay(date, now)) {
             return locale.get("time_today")
@@ -63,6 +63,9 @@ public interface DateFormat {
         } else if (days < 7) {
             return locale.get("time_x_days_ago")
                     .replace("{$0}", Long.toString(days));
+        } else if (days < 365) {
+            return combine(date.getDayOfMonth(),
+                    locale.get("month_" + date.getMonthValue()));
         } else {
             return combine(
                     date.getDayOfMonth(),

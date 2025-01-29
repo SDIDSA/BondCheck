@@ -3,6 +3,7 @@ package com.sdidsa.bondcheck.app.app_content.session.content.related;
 import android.content.Context;
 import android.location.Location;
 
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
 import com.sdidsa.bondcheck.abs.components.controls.text.ColoredLabel;
@@ -12,7 +13,7 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredHBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.Item;
 
 import java.time.Duration;
@@ -38,6 +39,14 @@ public class RelatedItemView extends ColoredHBox {
         return itemView;
     }
 
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(RelatedItemView::clearCache);
+    }
+
     private final ColoredIcon typeIcon;
     private final ColoredLabel typeLabel;
     private final ColoredLabel relation;
@@ -58,7 +67,7 @@ public class RelatedItemView extends ColoredHBox {
         labels.setSpacing(5);
         labels.addViews(typeLabel, relation);
 
-        addViews(labels, ContextUtils.spacer(owner, Orientation.HORIZONTAL), typeIcon);
+        addViews(labels, SpacerUtils.spacer(owner, Orientation.HORIZONTAL), typeIcon);
     }
 
     private void load(Item data, Item origin) {

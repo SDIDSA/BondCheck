@@ -1,17 +1,20 @@
 package com.sdidsa.bondcheck.abs.style;
 
-import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
-import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.data.ConcurrentArrayList;
 import com.sdidsa.bondcheck.abs.data.observable.ChangeListener;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.Platform;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface Styleable {
     void applyStyle(Style style);
-    void applyStyle(Property<Style> style);
+    default void applyStyle(Property<Style> style) {
+        bindStyle(this, style);
+    }
 
     static void bindStyle(Styleable node, Property<Style> style) {
         try {
@@ -21,15 +24,14 @@ public interface Styleable {
         }
     }
 
-    ConcurrentArrayList<WeakReference<Styleable>> bound_cache = new ConcurrentArrayList<>();
-
+    Set<WeakReference<Styleable>> bound_cache =
+            Collections.newSetFromMap(new ConcurrentHashMap<>());
     private static boolean isBound(Styleable node) {
         bound_cache.removeIf(n -> n.get() == null);
-        AtomicBoolean res = new AtomicBoolean(false);
-        bound_cache.forEach(nodeRef -> {
-            if(nodeRef.get() == node) res.set(true);
-        });
-        return res.get();
+        for(WeakReference<Styleable> nodeRef : bound_cache) {
+            if(nodeRef.get() == node) return true;
+        }
+        return false;
     }
 
     private static void bindStyleWeak(Styleable node, Property<Style> style) {
@@ -44,7 +46,10 @@ public interface Styleable {
                         weakNode.get().applyStyle(nv);
                     }
                 } else {
-                    Platform.runBack(() -> style.removeListener(this));
+                    Platform.runBack(() -> {
+                        style.removeListener(this);
+                        bound_cache.remove(weakNode);
+                    });
                 }
             }
         };

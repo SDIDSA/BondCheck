@@ -11,7 +11,7 @@ import com.sdidsa.bondcheck.abs.components.controls.image.Image;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
 
 public class LoginWithButton extends ColoredButton {
     public LoginWithButton(Context owner) {
@@ -22,7 +22,7 @@ public class LoginWithButton extends ColoredButton {
         super(owner, Style.BACK_SEC, Style.TEXT_SEC, "login_with_" + service);
         setFont(new Font(17, FontWeight.MEDIUM));
         Image icon = new ColorIcon(owner,iconRes, 26);
-        ContextUtils.setMarginRight(icon, owner, 15);
+        MarginUtils.setMarginRight(icon, owner, 15);
         addPreLabel(icon);
         setElevation(0);
 

@@ -20,7 +20,9 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 public class NetErr extends Page {
 
@@ -39,7 +41,7 @@ public class NetErr extends Page {
         name.setText(ContextUtils.getAppName(owner));
         top.addViews(heart, name);
 
-        ContextUtils.setMarginLeft(name, owner, 20);
+        MarginUtils.setMarginLeft(name, owner, 20);
 
         ColoredLabel rest = new ColoredLabel(owner,
                 Style.TEXT_NORM, "Failed to connect to the servers..."
@@ -59,7 +61,7 @@ public class NetErr extends Page {
         buttons.setSpacing(10);
         buttons.addViews(retry);
 
-        root.addViews(ContextUtils.spacer(owner, Orientation.VERTICAL), top, rest, buttons, ContextUtils.spacer(owner, Orientation.VERTICAL));
+        root.addViews(SpacerUtils.spacer(owner, Orientation.VERTICAL), top, rest, buttons, SpacerUtils.spacer(owner, Orientation.VERTICAL));
 
         addCentered(root);
     }

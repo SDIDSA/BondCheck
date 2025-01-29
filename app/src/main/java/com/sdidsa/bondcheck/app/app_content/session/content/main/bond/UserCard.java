@@ -1,10 +1,10 @@
 package com.sdidsa.bondcheck.app.app_content.session.content.main.bond;
 
 import android.content.Context;
-import android.graphics.Color;
 
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.controls.button.Button;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColorIcon;
 import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
@@ -15,10 +15,13 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
-import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.app_content.session.overlays.ViewProfileOverlay;
 import com.sdidsa.bondcheck.http.services.Service;
 import com.sdidsa.bondcheck.models.Gender;
@@ -54,6 +57,14 @@ public class UserCard extends HBox implements Styleable {
         return card;
     }
 
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(UserCard::clearCache);
+    }
+
     private static final float SIZE = 56;
     private final NetImage avatar;
     private final Label username;
@@ -83,14 +94,14 @@ public class UserCard extends HBox implements Styleable {
 
         action = new Button(owner, "");
         action.setPadding(10);
-        action.getLayoutParams().width = ContextUtils.dipToPx(100, owner);
+        action.getLayoutParams().width = SizeUtils.dipToPx(100, owner);
 
         info.addViews(username, gender);
 
-        ContextUtils.setMarginLeft(info, owner, 15);
-        addViews(avatar, info, ContextUtils.spacer(owner, Orientation.HORIZONTAL), action);
+        MarginUtils.setMarginLeft(info, owner, 15);
+        addViews(avatar, info, SpacerUtils.spacer(owner, Orientation.HORIZONTAL), action);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     private UserResponse user;
@@ -198,12 +209,8 @@ public class UserCard extends HBox implements Styleable {
     public void applyStyle(Style style) {
         username.setFill(style.getTextSecondary());
         gender.setFill(style.getTextSecondary());
-        action.setFill(style.getAccent());
-        action.setTextFill(Color.WHITE);
+        action.setFill(style.getBackgroundTertiary());
+        action.setTextFill(style.getTextNormal());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

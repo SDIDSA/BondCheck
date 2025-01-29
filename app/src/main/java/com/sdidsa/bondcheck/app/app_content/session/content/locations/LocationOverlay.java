@@ -2,6 +2,7 @@ package com.sdidsa.bondcheck.app.app_content.session.content.locations;
 
 import android.content.Context;
 
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
@@ -37,6 +38,14 @@ public class LocationOverlay extends PartialSlideOverlay implements ItemOverlay 
         return found;
     }
 
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(LocationOverlay::clearCache);
+    }
+
     private Item loaded;
 
     private final ItemOverlayHeader top;
@@ -68,14 +77,14 @@ public class LocationOverlay extends PartialSlideOverlay implements ItemOverlay 
 
     private void load(Item locationFor, boolean related) {
         loaded = locationFor;
-        top.showInfo(locationFor instanceof LocationResponse && !related);
         load();
+        top.showInfo(locationFor instanceof LocationResponse && !related);
     }
 
     private void load() {
         DBLocation dbLocation = loaded.getLocation();
         if(dbLocation == null) return;
-        mapView.load(dbLocation);
+        mapView.load(dbLocation, loaded.provider());
     }
 
     public void show(Item item) {

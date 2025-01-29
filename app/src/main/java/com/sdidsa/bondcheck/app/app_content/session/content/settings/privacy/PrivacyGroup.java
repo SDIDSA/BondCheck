@@ -16,6 +16,7 @@ public class PrivacyGroup extends SettingsGroup {
     public static final String KEEP_CONSENT = "keep_consent";
     public static final String ASK_EVERY_TIME = "ask_consent";
 
+    private SharingOverlay sharing;
     private RadioOverlay consent;
     private CensorAppsOverlay censor;
 
@@ -28,7 +29,10 @@ public class PrivacyGroup extends SettingsGroup {
 
         addSetting(new ActionSetting(owner, "enable_disable_sharing",
                 R.drawable.resource_switch, () -> {
-
+            if(sharing == null) {
+                sharing = new SharingOverlay(owner, "enable_disable_sharing");
+            }
+            sharing.show();
         }));
 
         addSetting(new ActionSetting(owner, "screen_share_consent", R.drawable.time, () -> {

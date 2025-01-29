@@ -14,8 +14,10 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class CheckBox extends StackPane implements Styleable {
 
@@ -30,7 +32,7 @@ public class CheckBox extends StackPane implements Styleable {
 
         background = new GradientDrawable();
         background.setColor(Color.TRANSPARENT);
-        background.setCornerRadius(ContextUtils.dipToPx(5, owner));
+        background.setCornerRadius(SizeUtils.dipToPx(5, owner));
 
         setBackground(background);
 
@@ -46,9 +48,9 @@ public class CheckBox extends StackPane implements Styleable {
 
         setSize(20);
 
-        ContextUtils.alignInFrame(checkMark, Alignment.CENTER);
+        AlignUtils.alignInFrame(checkMark, Alignment.CENTER);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public CheckBox(Context owner, float size) {
@@ -83,7 +85,7 @@ public class CheckBox extends StackPane implements Styleable {
             hideCheck.stop();
             hideCheck.start();
         }
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     public boolean isChecked() {
@@ -96,7 +98,7 @@ public class CheckBox extends StackPane implements Styleable {
 
     public void setSize(float size) {
         this.size = size;
-        int sizePx = ContextUtils.dipToPx(size, owner);
+        int sizePx = SizeUtils.dipToPx(size, owner);
 
         ViewGroup.LayoutParams old = getLayoutParams();
         if(old == null) {
@@ -104,16 +106,16 @@ public class CheckBox extends StackPane implements Styleable {
         }else {
             old.width = sizePx;
             old.height = sizePx;
-            requestLayout();
+            setLayoutParams(old);
         }
 
-        int cornerRadius = ContextUtils.dipToPx(size / 3.3f, owner);
+        int cornerRadius = SizeUtils.dipToPx(size / 3.3f, owner);
         background.setCornerRadius(cornerRadius);
         checkMark.setSize(size);
         checkMark.setPadding(size / 4);
         checkMark.setCornerRadius(size / 3.3f);
 
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     public void clearListeners() {
@@ -122,12 +124,8 @@ public class CheckBox extends StackPane implements Styleable {
 
     @Override
     public void applyStyle(Style style) {
-        background.setStroke(ContextUtils.dipToPx(size / 10, owner), style.getTextSecondary());
+        background.setStroke(SizeUtils.dipToPx(size / 10, owner), style.getTextSecondary());
         checkMark.setFill(style.getBackgroundPrimary());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

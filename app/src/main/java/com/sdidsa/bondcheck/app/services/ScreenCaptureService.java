@@ -28,9 +28,10 @@ import android.util.Log;
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.LocationUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.privacy.PrivacyGroup;
 import com.sdidsa.bondcheck.app.app_content.session.permission.PermissionCheck;
 import com.sdidsa.bondcheck.models.DBLocation;
@@ -79,7 +80,7 @@ public class ScreenCaptureService extends Service {
             return START_STICKY;
         }
 
-        receiver = Action.broadcastListener(this);
+        receiver = new BroadcastListener(this);
 
         receiver.on(Action.STOP_SCREEN_SHARING, this::suicide);
 
@@ -126,7 +127,6 @@ public class ScreenCaptureService extends Service {
         return PendingIntent.getService(this, 64, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    @SuppressWarnings("deprecation")
     private void startScreenCapture(Intent intent) {
         int resultCode = intent.getIntExtra("resultCode", Activity.RESULT_CANCELED);
         Intent data;
@@ -162,11 +162,9 @@ public class ScreenCaptureService extends Service {
 
         imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 3);
 
-        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenCapture", screenWidth, screenHeight, screenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(), new VirtualDisplay.Callback() {
-            @Override
-            public void onStopped() {
-                super.onStopped();
-            }
+        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenCapture", screenWidth, screenHeight, screenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(),
+                new VirtualDisplay.Callback() {
+
         }, null);
     }
 
@@ -220,14 +218,14 @@ public class ScreenCaptureService extends Service {
 
                 if (!handled) onCapture(bitmap, appName, requester);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ErrorHandler.handle(e, "process screenshot");
             }
         }
     }
 
     private void onCapture(Bitmap c, String app, String requester) {
         Platform.runBack(() -> {
-            DBLocation location = ContextUtils.getLocation(this);
+            DBLocation location = LocationUtils.getLocation(this);
             SaveItemRequest save = new SaveItemRequest(
                     requester, ImageProxy.saveTemp(c),
                     app, location);

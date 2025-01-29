@@ -12,8 +12,8 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
 
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
@@ -71,7 +71,7 @@ public class MapTileStyle extends HBox {
         ColoredLabel text = new ColoredLabel(owner, Style.TEXT_NORM, textString)
                 .setFont(new Font(18));
 
-        ContextUtils.setMarginLeft(text, owner, 10);
+        MarginUtils.setMarginLeft(text, owner, 10);
 
         setOnClickListener(e -> {
             mapView.setTileSource(tileSource);

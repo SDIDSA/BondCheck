@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes;
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
 import com.sdidsa.bondcheck.app.app_content.session.overlays.ViewProfileOverlay;
 import com.sdidsa.bondcheck.http.services.Service;
@@ -16,7 +16,13 @@ import java.util.function.Consumer;
 import retrofit2.Call;
 
 public enum BondState {
-
+    LOADING(
+            "fetching state",
+            "",
+            "",
+            R.drawable.heart_pulse,
+            null,
+            null),
     NO_BOND(
             "no_bond",
             "pending_button",

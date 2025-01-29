@@ -21,7 +21,8 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.Store;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.BondStatus;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.UserCard;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.UserCardMode;
@@ -75,7 +76,7 @@ public class MakeBondOverlay extends PartialSlideOverlay {
         });
 
         results = new StackPane(owner);
-        ContextUtils.spacer(results);
+        SpacerUtils.spacer(results);
         results.getLayoutParams().width = LayoutParams.MATCH_PARENT;
 
         empty = new ColoredLabel(owner,

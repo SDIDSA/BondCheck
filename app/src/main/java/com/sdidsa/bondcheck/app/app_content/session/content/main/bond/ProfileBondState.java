@@ -9,7 +9,8 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredHBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 public class ProfileBondState extends ColoredHBox {
     private final ColoredIcon stateIcon;
@@ -25,11 +26,10 @@ public class ProfileBondState extends ColoredHBox {
         stateIcon = new ColoredIcon(owner, Style.ACCENT,
                 R.drawable.empty, 48);
 
-        ContextUtils.setMarginLeft(stateIcon, owner, 15);
+        MarginUtils.setMarginLeft(stateIcon, owner, 15);
 
-        stateLabel = new ColoredLabel(owner, Style.TEXT_NORM, ""
-        );
-        ContextUtils.spacer(stateLabel);
+        stateLabel = new ColoredLabel(owner, Style.TEXT_NORM, "");
+        SpacerUtils.spacer(stateLabel);
         stateLabel.setFont(new Font(18));
 
         addViews(stateLabel, stateIcon);

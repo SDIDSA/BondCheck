@@ -5,14 +5,17 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.Gravity;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.locale.Localized;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
-import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,8 +38,9 @@ public class Label extends androidx.appcompat.widget.AppCompatTextView implement
 
         setFont(Font.DEFAULT);
 
-        setLayoutParams(new StackPane.LayoutParams(StackPane.LayoutParams.WRAP_CONTENT, StackPane.LayoutParams.WRAP_CONTENT));
-        applyLocale(ContextUtils.getLocale(owner));
+        setLayoutParams(new StackPane.LayoutParams(StackPane.LayoutParams.WRAP_CONTENT,
+                StackPane.LayoutParams.WRAP_CONTENT));
+        applyLocale(LocaleUtils.getLocale(owner));
 
         background = new GradientDrawable();
         setBackground(background);
@@ -51,19 +55,23 @@ public class Label extends androidx.appcompat.widget.AppCompatTextView implement
     }
 
     public void setPadding(float padding) {
-        ContextUtils.setPaddingUnified(this, padding, owner);
+        PaddingUtils.setPaddingUnified(this, padding, owner);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Label> T setFont(Font font) {
-        setTypeface(font.getFont());
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, font.getSize());
+        setFont(this, font);
         return (T) this;
+    }
+
+    public static void setFont(AppCompatTextView tv, Font font) {
+        tv.setTypeface(font.getFont());
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, font.getSize());
     }
 
     public void setKey(String key) {
         this.key = key;
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     public void setKey(String key, String...params) {
@@ -71,7 +79,7 @@ public class Label extends androidx.appcompat.widget.AppCompatTextView implement
         for(int i = 0; i < params.length; i++){
             this.params.put(i, params[i]);
         }
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     public String getKey() {
@@ -80,11 +88,11 @@ public class Label extends androidx.appcompat.widget.AppCompatTextView implement
 
     public void addParam(int i, String param) {
         params.put(i, param);
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     public void setLineSpacing(float spacing) {
-        setLineSpacing(ContextUtils.dipToPx(spacing, owner), 1);
+        setLineSpacing(SizeUtils.dipToPx(spacing, owner), 1);
     }
 
     public void centerText() {
@@ -104,10 +112,6 @@ public class Label extends androidx.appcompat.widget.AppCompatTextView implement
 
     public void setBackground(int color) {
         background.setColor(color);
-    }
-
-    public void applyLocale(Property<Locale> locale) {
-        Localized.bindLocale(this, locale);
     }
 
     public void setFill(int fill) {

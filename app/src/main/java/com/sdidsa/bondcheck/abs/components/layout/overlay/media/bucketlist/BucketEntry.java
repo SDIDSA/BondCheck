@@ -19,9 +19,12 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.media.Bucket;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class BucketEntry extends HBox implements Styleable {
     private final Label name;
@@ -30,7 +33,7 @@ public class BucketEntry extends HBox implements Styleable {
 
     public BucketEntry(Context owner) {
         super(owner);
-        ContextUtils.setPaddingHorizontalVertical(this, 20, 10, owner);
+        PaddingUtils.setPaddingHorizontalVertical(this, 20, 10, owner);
         setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT));
         setGravity(Gravity.CENTER);
@@ -57,13 +60,13 @@ public class BucketEntry extends HBox implements Styleable {
         thumb.setFocusable(false);
         thumb.setClickable(false);
 
-        ContextUtils.spacer(text, Orientation.HORIZONTAL);
+        SpacerUtils.spacer(text, Orientation.HORIZONTAL);
         addView(text);
         addView(thumb);
 
         setBackground(new GradientDrawable());
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void load(Bucket data) {
@@ -74,7 +77,7 @@ public class BucketEntry extends HBox implements Styleable {
             data.getItems().get(0)
                     .getThumbnail(
                             owner,
-                            ContextUtils.dipToPx(64, owner),
+                            SizeUtils.dipToPx(64, owner),
                             thumb::setImageBitmap,
                             () -> thumb.setImageResource(R.drawable.problem)
                     );
@@ -100,8 +103,4 @@ public class BucketEntry extends HBox implements Styleable {
         });
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

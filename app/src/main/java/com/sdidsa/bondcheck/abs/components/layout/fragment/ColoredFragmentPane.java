@@ -6,7 +6,7 @@ import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredFragmentPane extends FragmentPane implements Styleable {
     private final StyleToColor fill;
@@ -20,7 +20,7 @@ public class ColoredFragmentPane extends FragmentPane implements Styleable {
     public ColoredFragmentPane(Context owner, Class<? extends Fragment> type, StyleToColor fill) {
         super(owner, type);
         this.fill = fill;
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -29,8 +29,4 @@ public class ColoredFragmentPane extends FragmentPane implements Styleable {
             setBackgroundColor(fill.get(style));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

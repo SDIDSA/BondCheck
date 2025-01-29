@@ -7,7 +7,7 @@ import androidx.annotation.DrawableRes;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 public class ActionSetting extends Setting {
     public ActionSetting(Context owner) {
@@ -20,7 +20,7 @@ public class ActionSetting extends Setting {
 
         ColoredIcon icon = new ColoredIcon(owner, Style.TEXT_SEC, iconRes, 20);
 
-        addPostLabel(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        addPostLabel(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         addPostLabel(icon);
     }
 }

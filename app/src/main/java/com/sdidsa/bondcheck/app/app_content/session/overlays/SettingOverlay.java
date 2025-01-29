@@ -3,9 +3,9 @@ package com.sdidsa.bondcheck.app.app_content.session.overlays;
 import android.content.Context;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.MultipleOptionOverlay;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.OverlayOption;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ public class SettingOverlay extends MultipleOptionOverlay {
                 try {
                     set.accept(option.text());
                     Platform.runLater(() ->
-                            applyStyle(ContextUtils.getStyle(owner)));
+                            applyStyle(StyleUtils.getStyle(owner)));
                 } catch (Exception e) {
                     ErrorHandler.handle(e, "setting " + key + " to " + option);
                 }

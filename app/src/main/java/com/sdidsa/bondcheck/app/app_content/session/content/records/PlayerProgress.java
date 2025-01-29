@@ -10,8 +10,9 @@ import com.sdidsa.bondcheck.abs.components.layout.ColoredStackPane;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.util.function.Consumer;
 
@@ -37,13 +38,13 @@ public class PlayerProgress extends StackPane {
         ColoredStackPane track = new ColoredStackPane(owner, Style.BACK_TER);
         ColoredStackPane progressTrack = new ColoredStackPane(owner, Style.TEXT_MUT);
         thumb = new ColoredRectangle(owner, Style.TEXT_NORM);
-        thumb.setElevation(ContextUtils.dipToPx(7, owner));
+        thumb.setElevation(SizeUtils.dipToPx(7, owner));
 
         size.addListener((ov, nv) -> {
             ViewGroup.LayoutParams params = track.getLayoutParams();
             if(params == null) params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             params.width = LayoutParams.MATCH_PARENT;
-            params.height = ContextUtils.dipToPx(nv, owner);
+            params.height = SizeUtils.dipToPx(nv, owner);
             track.setLayoutParams(params);
             track.setCornerRadius(nv);
             thumb.setSize(nv * 3, nv * 3);
@@ -54,11 +55,11 @@ public class PlayerProgress extends StackPane {
         progress.addListener((ov, nv) -> {ViewGroup.LayoutParams params = progressTrack.getLayoutParams();
             if(params == null) params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             params.width = (int) (getWidth() * nv);
-            params.height = ContextUtils.dipToPx(size.get(), owner);
+            params.height = SizeUtils.dipToPx(size.get(), owner);
             progressTrack.setLayoutParams(params);
             progressTrack.setCornerRadius(size.get());
             thumb.setTranslationX(((getWidth() - (params.height * 3)) * nv)
-                    * ContextUtils.getLocaleDirection(owner));
+                    * LocaleUtils.getLocaleDirection(owner));
         });
 
         size.set(10f);
@@ -115,7 +116,7 @@ public class PlayerProgress extends StackPane {
 
     private void posFromEvent(MotionEvent event) {
         float x = event.getX() - thumb.getWidth() / 2f;
-        if(ContextUtils.isRtl(owner)) {
+        if(LocaleUtils.isRtl(owner)) {
             x = getWidth() - x;
             x -= thumb.getWidth();
         }

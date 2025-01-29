@@ -2,6 +2,7 @@ package com.sdidsa.bondcheck.http.services;
 
 import androidx.annotation.NonNull;
 
+import com.sdidsa.bondcheck.BuildConfig;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 
 import java.util.function.Consumer;
@@ -11,7 +12,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public interface Service {
-    String BASE_URL = "http://192.168.13.161:3000/";
+    String BASE_URL = "http://" +
+            BuildConfig.LOCAL_IP +
+            ":3000/";
 
     static <T> void enqueue(Call<T> call,
                             Consumer<Response<T>> onSuccess) {

@@ -46,7 +46,7 @@ public class Locale {
 
 		if (found == null) {
 			found = key;
-			//ErrorHandler.handle(new RuntimeException("Missing Key From Locale"), "getting value of key [" + key + "] for locale [" + name + "]");
+			ErrorHandler.handle(new RuntimeException("Missing Key From Locale"), "getting value of key [" + key + "] for locale [" + name + "]");
 		}
 
 		return found;

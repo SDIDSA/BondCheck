@@ -4,8 +4,8 @@ import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Build;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.view.PermissionUtils;
 import com.sdidsa.bondcheck.app.app_content.session.permission.PermissionCheck;
 
 import java.io.File;
@@ -19,14 +19,13 @@ public class AudioRecorder {
 
     public boolean startRecording(Context context) {
         if(PermissionCheck.hasMicrophonePermission(context)) {
-            ContextUtils.requirePermissions(context, () -> start(context),
+            PermissionUtils.requirePermissions(context, () -> start(context),
                     android.Manifest.permission.RECORD_AUDIO);
             return true;
         }
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     private void start(Context context) {
         try {
             file = File.createTempFile("record", ".mp4");

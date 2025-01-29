@@ -9,7 +9,8 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class Setting extends Button implements Styleable {
     public Setting(Context owner) {
@@ -18,14 +19,16 @@ public class Setting extends Button implements Styleable {
 
     public Setting(Context owner, String key) {
         super(owner, key);
-        setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ContextUtils.dipToPx(56, owner)));
+        setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                SizeUtils.dipToPx(56, owner)));
         setPadding(10);
 
         content.setGravity(Gravity.CENTER);
 
         setFont(new Font(16));
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -34,8 +37,4 @@ public class Setting extends Button implements Styleable {
         setTextFill(style.getTextNormal());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

@@ -14,7 +14,9 @@ import com.sdidsa.bondcheck.abs.animation.view.AlphaAnimation;
 import com.sdidsa.bondcheck.abs.animation.view.position.TranslateXAnimation;
 import com.sdidsa.bondcheck.abs.components.controls.shape.Rectangle;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class LinearLoading extends HBox implements Loading{
     private static final int count = 4;
@@ -46,37 +48,38 @@ public class LinearLoading extends HBox implements Loading{
             addView(rectangles[i]);
         }
 
-        float shift = ContextUtils.dipToPx(-(size * 2), owner);
+        float shift = SizeUtils.dipToPx(-(size * 2), owner);
 
         loader = new ParallelAnimation(500)
                 .addAnimation(new AlphaAnimation(rectangles[0],0, 1))
                 .addAnimation(new ScaleXYAnimation(rectangles[0],.5f, 1))
                 .addAnimation(new AlphaAnimation(rectangles[count -1], 1, 0))
                 .addAnimation(new ScaleXYAnimation(rectangles[count - 1], 1, 0.5f))
+                .setDisableTimeScale(true)
                 .setInterpolator(Interpolator.EASE_OUT).setCycleCount(Animation.INDEFINITE);
         for(int i = 0; i < count; i++) {
             loader.addAnimation(new TranslateXAnimation(rectangles[i], shift, 0));
         }
 
         for(int i = 1; i < count; i++) {
-            ContextUtils.setMarginLeft(rectangles[i], owner, size);
+            MarginUtils.setMarginLeft(rectangles[i], owner, size);
         }
 
-        setTranslationX((-shift / 2) * ContextUtils.getLocaleDirection(owner));
+        setTranslationX((-shift / 2) * LocaleUtils.getLocaleDirection(owner));
 
         setSize(size);
     }
 
     private void setSize(float size) {
-        float shift = ContextUtils.dipToPx(-(size * 2), owner);
+        float shift = SizeUtils.dipToPx(-(size * 2), owner);
 
         for(Rectangle rect : rectangles) {
-            rect.setTranslationX(shift * ContextUtils.getLocaleDirection(owner));
+            rect.setTranslationX(shift * LocaleUtils.getLocaleDirection(owner));
         }
         rectangles[0].setAlpha(0);
         rectangles[count - 1].setAlpha(1);
 
-        setTranslationX((-shift / 2) * ContextUtils.getLocaleDirection(owner));
+        setTranslationX((-shift / 2) * LocaleUtils.getLocaleDirection(owner));
 
         if(loader != null && loader.isRunning()) {
             loader.stop();
@@ -119,6 +122,11 @@ public class LinearLoading extends HBox implements Loading{
         for(Rectangle r : rectangles) {
             r.setFill(c);
         }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     public void setFill(int fill) {

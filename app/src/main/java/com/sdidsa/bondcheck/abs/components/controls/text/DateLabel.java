@@ -3,7 +3,7 @@ package com.sdidsa.bondcheck.abs.components.controls.text;
 import android.content.Context;
 
 import com.sdidsa.bondcheck.abs.locale.Locale;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,7 +18,7 @@ public class DateLabel extends Label {
 
     public void setFormat(DateFormat format) {
         this.format = format;
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     public void setDate(Date date) {
@@ -27,7 +27,7 @@ public class DateLabel extends Label {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     @Override

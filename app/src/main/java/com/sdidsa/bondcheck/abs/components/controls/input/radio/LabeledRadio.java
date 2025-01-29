@@ -11,7 +11,8 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
 import com.sdidsa.bondcheck.abs.data.property.Property;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class LabeledRadio extends HBox implements Styleable {
 
@@ -32,14 +33,14 @@ public class LabeledRadio extends HBox implements Styleable {
 
 
         addView(label);
-        addView(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        addView(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         addView(radio);
 
         setOnClickListener(e -> setChecked(true));
 
         setDefaultFocusHighlightEnabled(false);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void setFont(Font font) {
@@ -65,11 +66,6 @@ public class LabeledRadio extends HBox implements Styleable {
                         focused ?
                                 style.getTextNormal() :
                                 style.getTextSecondary()));
-    }
-
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
     }
 
     public void setTransformationMethod(TransformationMethod method) {

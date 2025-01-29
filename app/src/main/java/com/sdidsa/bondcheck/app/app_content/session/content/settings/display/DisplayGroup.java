@@ -10,9 +10,12 @@ import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.OverlayOption;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.shared.MultipleChoiceSetting;
@@ -32,7 +35,7 @@ public class DisplayGroup extends SettingsGroup {
                 v -> Store.setTheme(v, s -> {
                     owner.sendBroadcast(App.broadcast(Action.STYLE_CHANGED));
                     Platform.runLater(() ->
-                            ContextUtils.applyTheme(owner));
+                            StyleUtils.applyTheme(owner));
                 }),
                 new OverlayOption(Style.THEME_SYSTEM, R.drawable.sun_moon),
                 new OverlayOption(Style.THEME_DARK, R.drawable.moon),
@@ -50,7 +53,7 @@ public class DisplayGroup extends SettingsGroup {
         addSetting(new MultipleChoiceSetting(owner, "language", Store::getLanguage,
                 v -> Store.setLanguage(v, s -> {
                     owner.sendBroadcast(App.broadcast(Action.LOCALE_CHANGED));
-                    ContextUtils.setLocale(owner, Locale.forName(owner, v));
+                    LocaleUtils.setLocale(owner, Locale.forName(owner, v));
                 }),
                 new OverlayOption("en_us"),
                 new OverlayOption("fr_fr"),
@@ -60,7 +63,7 @@ public class DisplayGroup extends SettingsGroup {
 
         addSetting(new UiScaleSetting(owner, "ui_scale", () -> Store.getScale().getText(),
                 v -> Store.setScale(v, s -> {
-                    ContextUtils.scale = UiScale.forText(s).getScale();
+                    SizeUtils.scale = UiScale.forText(s).getScale();
                     ContextUtils.unloadApp(owner, () -> {
                         float oldTimeScale = Animation.timeScale;
                         Animation.timeScale = 0;

@@ -39,9 +39,28 @@ public class DiskImageCache {
     }
 
     public File put(String key, Bitmap data) {
+        Bitmap resizedBitmap = data;
+        if(data.getWidth() > 2048 || data.getHeight() > 2048) {
+            int maxWidth = 2048;
+            int maxHeight = 2048;
+            if(data.getWidth() > data.getHeight()) {
+                maxHeight = (int) ((float) data.getHeight() / data.getWidth() * maxWidth);
+            } else {
+                maxWidth = (int) ((float) data.getWidth() / data.getHeight() * maxHeight);
+            }
+            resizedBitmap = ImageProxy.scale(
+                    data,
+                    maxWidth,
+                    maxHeight
+            );
+        }
+
+
         File saveTo = keyToFile(key);
         try (OutputStream os = new FileOutputStream(saveTo)){
-            data.compress(mCompressFormat, mCompressQuality, os);
+
+            resizedBitmap.compress(mCompressFormat, mCompressQuality, os);
+
         } catch (IOException e) {
             ErrorHandler.handle(e, "caching image with key [ " + key + " ]");
         }
@@ -54,7 +73,7 @@ public class DiskImageCache {
             try (InputStream is = new FileInputStream(readFrom)) {
                 return BitmapFactory.decodeStream(is);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                ErrorHandler.handle(e, "get image " + key + " from disk cache");
             }
         }
         return null;
@@ -69,4 +88,11 @@ public class DiskImageCache {
         return new File(diskCacheDir.getAbsolutePath() + File.separator + key);
     }
 
+    public Bitmap.CompressFormat getmCompressFormat() {
+        return mCompressFormat;
+    }
+
+    public int getmCompressQuality() {
+        return mCompressQuality;
+    }
 }

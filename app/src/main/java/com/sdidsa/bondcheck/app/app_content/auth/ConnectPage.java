@@ -19,7 +19,8 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
 
 public abstract class ConnectPage extends Page {
     protected final VBox root;
@@ -44,7 +45,7 @@ public abstract class ConnectPage extends Page {
         back.setPadding(10);
         back.setAutoMirror(true);
         back.setContentDescription("Go Back to welcome page");
-        ContextUtils.setMarginRight(back, owner, 15);
+        MarginUtils.setMarginRight(back, owner, 15);
 
         back.setImagePadding(3);
         back.setOnClick(this::onBack);
@@ -81,7 +82,7 @@ public abstract class ConnectPage extends Page {
 
     @Override
     public void applyInsets(Insets insets) {
-        new PaddingAnimation(250, this, insets.left, insets.top, insets.right, insets.bottom)
+        new PaddingAnimation(250, this, PaddingUtils.getPadding(this), insets)
                 .setInterpolator(Interpolator.EASE_OUT)
                 .start();
     }

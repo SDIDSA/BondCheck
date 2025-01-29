@@ -2,6 +2,7 @@ package com.sdidsa.bondcheck.app.app_content.session.content.item_display;
 
 import android.content.Context;
 
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.controls.text.ColoredDateLabel;
@@ -14,9 +15,58 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredHBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ItemView extends ColoredHBox {
+    private static final HashMap<Class<? extends ItemView>, ArrayList<ItemView>> globalCache = new HashMap<>();
+
+    public static void clearCache() {
+        globalCache.clear();
+    }
+
+    public synchronized static <T extends ItemView> T instance(Context owner, Class<T> type) {
+        ArrayList<ItemView> cache = globalCache.computeIfAbsent(type, k -> new ArrayList<>());
+        cache.removeIf(item -> item.getOwner() != owner);
+
+        ItemView view = null;
+        for(ItemView c : cache) {
+            if(c.getParent() == null) {
+                view = c;
+                break;
+            }
+        }
+
+        if(view == null) {
+            try {
+                Constructor<T> constructor = type.getConstructor(Context.class);
+                T iv = constructor.newInstance(owner);
+                cache.add(iv);
+                return iv;
+            } catch (NoSuchMethodException | IllegalAccessException |
+                     InvocationTargetException | InstantiationException e) {
+                ErrorHandler.handle(e, "get instance of " + type.getSimpleName());
+            }
+        }
+        if(type.isInstance(view)) {
+            return type.cast(view);
+        }else {
+            ErrorHandler.handle(
+                    new ClassCastException(view + " can't be cast to " + type.getSimpleName())
+                    , "get instance of " + type.getSimpleName());
+        }
+        return null;
+    }
+
+    static {
+        UiCache.register(ItemView::clearCache);
+    }
+
     private final DateLabel time;
     protected final Label second;
 
@@ -38,7 +88,7 @@ public class ItemView extends ColoredHBox {
         second.setFont(new Font(18, FontWeight.MEDIUM));
 
         info.addViews(time, second);
-        ContextUtils.spacer(info);
+        SpacerUtils.spacer(info);
         addViews(info);
     }
 

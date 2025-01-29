@@ -17,7 +17,8 @@ import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.ItemOverlayHeader;
 
 public class WhyPermissionOverlay extends PartialSlideOverlay {
@@ -48,7 +49,7 @@ public class WhyPermissionOverlay extends PartialSlideOverlay {
         header.setLineSpacing(4);
 
         illustration = new StackPane(owner);
-        ContextUtils.spacer(illustration, Orientation.VERTICAL);
+        SpacerUtils.spacer(illustration, Orientation.VERTICAL);
 
         skip = new ColoredButton(owner, Style.BACK_SEC, Style.TEXT_NORM, "I don't need this")
                 .setFont(new Font(18, FontWeight.MEDIUM));
@@ -84,7 +85,7 @@ public class WhyPermissionOverlay extends PartialSlideOverlay {
 
     protected void addLayer(@DrawableRes int res, StyleToColor fill, float alpha) {
         ColoredIcon layer = new ColoredIcon(owner, fill, res);
-        layer.setImageAlpha(alpha);
+        layer.setViewAlpha(alpha);
         layer.setLayoutParams(new LayoutParams(-1, -1));
         illustration.addCentered(layer);
     }

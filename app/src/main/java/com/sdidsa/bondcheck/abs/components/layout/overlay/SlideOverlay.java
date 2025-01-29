@@ -10,7 +10,8 @@ import com.sdidsa.bondcheck.abs.animation.view.AlphaAnimation;
 import com.sdidsa.bondcheck.abs.animation.view.position.TranslateYAnimation;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredVBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public abstract class SlideOverlay extends Overlay {
     protected final ColoredVBox list;
@@ -29,7 +30,7 @@ public abstract class SlideOverlay extends Overlay {
 
         addView(list);
 
-        list.setElevation(ContextUtils.by(owner));
+        list.setElevation(SizeUtils.by(owner));
 
         addToShow(new TranslateYAnimation(list, 0)
                 .setLateFrom(() -> (float) (list.getHeight() / 2)));

@@ -25,8 +25,11 @@ import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.Main;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.BondState;
@@ -48,7 +51,7 @@ public class BondSettingsOverlay extends PartialSlideOverlay {
         VBox noBond = new VBox(owner);
         noBond.setSpacing(20);
         noBond.setAlignment(Alignment.CENTER);
-        ContextUtils.alignInFrame(noBond, Alignment.CENTER);
+        AlignUtils.alignInFrame(noBond, Alignment.CENTER);
 
         ColorIcon noBondIcon = new ColorIcon(owner,
                 R.drawable.heart_broken, 72);
@@ -60,7 +63,7 @@ public class BondSettingsOverlay extends PartialSlideOverlay {
         noBond.addViews(noBondIcon, noBondLabel);
 
         int sizeDp = 128;
-        int size = ContextUtils.dipToPx(sizeDp + 60, owner);
+        int size = SizeUtils.dipToPx(sizeDp + 60, owner);
         sp.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, size));
 
@@ -74,13 +77,13 @@ public class BondSettingsOverlay extends PartialSlideOverlay {
 
         state.setSize(sizeDp / 2.5f);
         state.setCornerRadius(sizeDp / 2f);
-        int dt = ContextUtils.dipToPx(sizeDp / 3,owner);
-        state.setTranslationX(dt * ContextUtils.getLocaleDirection(owner));
+        int dt = SizeUtils.dipToPx(sizeDp / 3,owner);
+        state.setTranslationX(dt * LocaleUtils.getLocaleDirection(owner));
         state.setTranslationY(dt);
         state.setPadding(12);
 
-        ContextUtils.alignInFrame(pfp, Alignment.CENTER);
-        ContextUtils.alignInFrame(state, Alignment.CENTER);
+        AlignUtils.alignInFrame(pfp, Alignment.CENTER);
+        AlignUtils.alignInFrame(state, Alignment.CENTER);
 
         VBox content = new VBox(owner);
         content.setPadding(20);
@@ -198,7 +201,7 @@ public class BondSettingsOverlay extends PartialSlideOverlay {
         res.setFont(new Font(18, FontWeight.MEDIUM));
         res.setElevation(0);
 
-        res.addPostLabel(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        res.addPostLabel(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         res.addPostLabel(new ColoredIcon(owner, Style.TEXT_SEC, icon, 22));
 
         return res;

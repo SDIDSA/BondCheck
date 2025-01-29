@@ -24,7 +24,12 @@ import com.sdidsa.bondcheck.abs.data.observable.ChangeListener;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.http.services.Service;
 import com.sdidsa.bondcheck.http.services.SessionService;
 import com.sdidsa.bondcheck.models.Gender;
@@ -66,26 +71,26 @@ public class EditProfileOverlay extends PartialSlideOverlay {
 
         ColoredStackPane topBack = new ColoredStackPane(owner, Style.BACK_TER);
         topBack.setCornerRadiusTop(20);
-        topBack.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, ContextUtils.dipToPx(180, owner)));
+        topBack.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, SizeUtils.dipToPx(180, owner)));
 
         ColoredStackPane avatarBack = new ColoredStackPane(owner, Style.BACK_PRI);
-        int size = ContextUtils.dipToPx(180, owner);
+        int size = SizeUtils.dipToPx(180, owner);
         avatarBack.setCornerRadius(128);
         avatarBack.setLayoutParams(new LayoutParams(size, size));
-        avatarBack.setY(ContextUtils.dipToPx(40, owner));
+        avatarBack.setY(SizeUtils.dipToPx(40, owner));
 
         root.addView(topBack);
         root.addView(avatarBack);
 
-        ContextUtils.alignInFrame(avatarBack, Alignment.TOP_CENTER);
+        AlignUtils.alignInFrame(avatarBack, Alignment.TOP_CENTER);
 
-        int avatarSize = ContextUtils.dipToPx(160, owner);
+        int avatarSize = SizeUtils.dipToPx(160, owner);
         avatar = new NetImage(owner, Style.BACK_TER);
         avatar.setCornerRadius(160);
         avatar.setSize(160);
-        avatar.setY(ContextUtils.dipToPx(50, owner));
+        avatar.setY(SizeUtils.dipToPx(50, owner));
         root.addView(avatar);
-        ContextUtils.alignInFrame(avatar, Alignment.TOP_CENTER);
+        AlignUtils.alignInFrame(avatar, Alignment.TOP_CENTER);
 
         VBox ui = new VBox(owner);
         ui.setPadding(15);
@@ -101,10 +106,10 @@ public class EditProfileOverlay extends PartialSlideOverlay {
         avatar.startLoading();
 
         HBox top = new HBox(owner);
-        ContextUtils.setPaddingTop(top, 110, owner);
+        PaddingUtils.setPaddingTop(top, 110, owner);
 
         top.setAlignment(Alignment.CENTER_RIGHT);
-        ContextUtils.setMarginTop(username, owner, 64);
+        MarginUtils.setMarginTop(username, owner, 64);
 
 
         top.addView(editPfp);
@@ -366,11 +371,11 @@ public class EditProfileOverlay extends PartialSlideOverlay {
             VBox labels = new VBox(owner);
             labels.addViews(title, value);
             labels.setSpacing(5);
-            ContextUtils.spacer(labels);
+            SpacerUtils.spacer(labels);
 
             edit = new ColoredIcon(owner, Style.TEXT_SEC, Style.BACK_SEC, R.drawable.edit, 40);
             edit.setRadiusNoClip(10);
-            edit.setPadding(8);
+            edit.setPadding(10);
             addViews(labels, edit);
         }
 

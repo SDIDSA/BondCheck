@@ -49,7 +49,6 @@ import com.sdidsa.bondcheck.abs.components.controls.text.ColoredLabel;
 import com.sdidsa.bondcheck.abs.components.controls.text.Label;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
-import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredVBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.Overlay;
@@ -58,12 +57,15 @@ import com.sdidsa.bondcheck.abs.data.media.Media;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.view.LocationUtils;
 import com.sdidsa.bondcheck.abs.utils.OnPermission;
 import com.sdidsa.bondcheck.abs.utils.Permissions;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.services.Action;
 import com.sdidsa.bondcheck.app.services.TransparentActivity;
 import com.sdidsa.bondcheck.abs.components.controls.audio.AudioRecorder;
@@ -102,7 +104,7 @@ public class App extends AppCompatActivity {
     public Style dark, light;
     public Locale ar_ar;
     Animation running = null;
-    private StackPane root;
+    public StackPane root;
     private Page loaded;
     private Property<Style> style;
     private Property<Locale> locale;
@@ -146,7 +148,7 @@ public class App extends AppCompatActivity {
         if(recorder.startRecording(context)) {
             Platform.runAfter(() -> recorder.stopRecording(bytes ->
                     Platform.runBack(() -> {
-                        DBLocation location = ContextUtils.getLocation(context);
+                        DBLocation location = LocationUtils.getLocation(context);
                         SaveItemRequest save = new SaveItemRequest(requester, bytes, location);
                         Call<GenericResponse> call = save.saveRecord(context);
 
@@ -165,7 +167,7 @@ public class App extends AppCompatActivity {
 
     public static void requestLocation(Context context, Socket socket, String requester) {
         Platform.runBack(() -> {
-            DBLocation location = ContextUtils.getLocation(context);
+            DBLocation location = LocationUtils.getLocation(context);
             if(location != null) {
                 Call<GenericResponse> call = api(context).saveLocation(
                         new SaveItemRequest(requester, location));
@@ -207,7 +209,6 @@ public class App extends AppCompatActivity {
         return intent;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -263,10 +264,8 @@ public class App extends AppCompatActivity {
         Platform.runBack(() -> {
             Page.clearCache();
 
-
-
-            dark = new Style(this, "dark", true);
-            light = new Style(this, "light", false);
+            dark = new Style(this, "#E7184C", true);
+            light = new Style(this, "#E7184C", false);
 
             style = new Property<>();
             applyTheme();
@@ -476,8 +475,9 @@ public class App extends AppCompatActivity {
                     root.removeAllViews();
                     loaded = null;
                     loadedOverlay.clear();
-                    Page.clearCache();
-                    Fragment.clearCache();
+
+                    UiCache.clearAll();
+
                     if(post != null) {
                         post.run();
                     }
@@ -505,8 +505,8 @@ public class App extends AppCompatActivity {
 
         StackPane.LayoutParams params = new StackPane.LayoutParams(StackPane.LayoutParams.MATCH_PARENT, StackPane.LayoutParams.WRAP_CONTENT);
 
-        int margins = ContextUtils.dipToPx(30, this);
-        params.setMargins(margins, margins, margins, (getScreenHeight() / 10) + systemInsets.bottom);
+        int margins = SizeUtils.dipToPx(30, this);
+        params.setMargins(margins, margins, margins, (ContextUtils.getScreenHeight(this) / 10) + systemInsets.bottom);
         params.gravity = Gravity.BOTTOM;
 
         toast.setLayoutParams(params);
@@ -515,10 +515,10 @@ public class App extends AppCompatActivity {
         toast.setPadding(15);
         toast.setSpacing(15);
 
-        toast.setElevation(ContextUtils.dipToPx(15, this));
+        toast.setElevation(SizeUtils.dipToPx(15, this));
 
         toast.setAlpha(0);
-        toast.setTranslationY(ContextUtils.dipToPx(100, this));
+        toast.setTranslationY(SizeUtils.dipToPx(100, this));
         toast.setScaleX(.7f);
         toast.setScaleY(.7f);
 
@@ -535,11 +535,11 @@ public class App extends AppCompatActivity {
         Platform.waitWhile(() -> toast.getHeight() == 0, () -> {
             if (!oldToasts.isEmpty()) {
                 ParallelAnimation up = new ParallelAnimation(300).setInterpolator(Interpolator.OVERSHOOT);
-                int y = toast.getHeight() + ContextUtils.dipToPx(20, this);
+                int y = toast.getHeight() + SizeUtils.dipToPx(20, this);
                 for (View old : oldToasts) {
                     if (old != toast) {
                         up.addAnimation(new TranslateYAnimation(old, -y));
-                        y += old.getHeight() + ContextUtils.dipToPx(20, this);
+                        y += old.getHeight() + SizeUtils.dipToPx(20, this);
                     }
                 }
                 up.start();
@@ -550,7 +550,11 @@ public class App extends AppCompatActivity {
 
         Platform.runAfter(() -> Platform.waitWhile(() -> !toasting.isEmpty(), () -> {
             oldToasts.remove(toast);
-            new ParallelAnimation(400).addAnimation(new AlphaAnimation(toast, 0)).addAnimation(new TranslateYAnimation(toast, 0).setLateTo(() -> toast.getTranslationY() - ContextUtils.dipToPx(60, this))).setInterpolator(Interpolator.EASE_OUT).setOnFinished(() -> root.removeView(toast)).start();
+            new ParallelAnimation(400).addAnimation(new AlphaAnimation(toast, 0))
+                    .addAnimation(new TranslateYAnimation(toast, 0)
+                            .setLateTo(() -> toast.getTranslationY() -
+                                    SizeUtils.dipToPx(60, this)))
+                    .setInterpolator(Interpolator.EASE_OUT).setOnFinished(() -> root.removeView(toast)).start();
         }), duration);
 
         oldToasts.add(0, toast);
@@ -599,10 +603,6 @@ public class App extends AppCompatActivity {
         }
     }
 
-    public int getScreenHeight() {
-        return ContextUtils.getScreenHeight(this);
-    }
-
     public Property<Style> getStyle() {
         return style;
     }
@@ -636,13 +636,13 @@ public class App extends AppCompatActivity {
                     style.set(Style.interpolateColors(old, s, v));
                 }
             }.setOnFinished(() -> {
-                ContextUtils.setStyle(this, s);
+                StyleUtils.setStyle(this, s);
                 setTheme(s.isDark() ? R.style.Theme_BondCheck_Dark : R.style.Theme_BondCheck_Light);
             }).setInterpolator(Interpolator.OVERSHOOT);
             theming = a;
             a.start();
         } else {
-            ContextUtils.setStyle(this, s);
+            StyleUtils.setStyle(this, s);
             setTheme(s.isDark() ? R.style.Theme_BondCheck_Dark : R.style.Theme_BondCheck_Light);
         }
     }

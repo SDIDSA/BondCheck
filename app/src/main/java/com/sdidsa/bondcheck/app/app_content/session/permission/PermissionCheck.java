@@ -35,8 +35,11 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PermissionUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.BondCheck;
 
 import java.util.HashSet;
@@ -135,7 +138,7 @@ public class PermissionCheck extends Page {
         preItems.setClipToOutline(true);
         preItems.addView(items);
 
-        ContextUtils.spacer(preItems, Orientation.VERTICAL);
+        SpacerUtils.spacer(preItems, Orientation.VERTICAL);
 
         root.addView(preItems);
         root.addView(ready);
@@ -179,7 +182,7 @@ public class PermissionCheck extends Page {
         res.setCornerRadius(15);
 
         top.addView(header);
-        top.addView(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        top.addView(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
 
         top.addView(label);
 
@@ -187,7 +190,7 @@ public class PermissionCheck extends Page {
         if(onWhy != null) {
             why.setOnClick(onWhy);
         }
-        ContextUtils.setMarginRight(why, owner, 15);
+        MarginUtils.setMarginRight(why, owner, 15);
 
         grant.addViews(why, grantNow);
 
@@ -248,7 +251,7 @@ public class PermissionCheck extends Page {
         res.addPostLabel(icon);
         res.setElevation(0);
         res.setFont(new Font(18));
-        ContextUtils.spacer(res);
+        SpacerUtils.spacer(res);
         return res;
     }
 
@@ -268,7 +271,7 @@ public class PermissionCheck extends Page {
 
     public static void requestNotificationPermission(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API level 33
-            ContextUtils.requestPermissions(context, null,
+            PermissionUtils.requestPermissions(context, null,
                     android.Manifest.permission.POST_NOTIFICATIONS);
         }else {
             Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
@@ -285,13 +288,13 @@ public class PermissionCheck extends Page {
     }
 
     public static void requestMicrophonePermission(Context context) {
-        ContextUtils.requestPermissions(context,null,
+        PermissionUtils.requestPermissions(context,null,
                 android.Manifest.permission.RECORD_AUDIO);
     }
 
     public static void requestLocationPermission(Context context) {
-        ContextUtils.requirePermissionsOr(context, () ->
-                        ContextUtils.requestPermissions(context, null,
+        PermissionUtils.requirePermissionsOr(context, () ->
+                        PermissionUtils.requestPermissions(context, null,
                                 Manifest.permission.ACCESS_BACKGROUND_LOCATION),
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -324,11 +327,11 @@ public class PermissionCheck extends Page {
     }
 
     public static boolean hasMicrophonePermission(Context context) {
-        return ContextUtils.isGranted(context, android.Manifest.permission.RECORD_AUDIO);
+        return PermissionUtils.isGranted(context, android.Manifest.permission.RECORD_AUDIO);
     }
 
     public static boolean hasLocationPermission(Context context) {
-        return ContextUtils.isGranted(context,
+        return PermissionUtils.isGranted(context,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION);

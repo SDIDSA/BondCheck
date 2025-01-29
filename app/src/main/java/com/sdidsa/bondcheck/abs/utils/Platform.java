@@ -50,6 +50,10 @@ public class Platform {
         waitWhile(condition, -1);
     }
 
+    public static void waitWhileNot(Supplier<Boolean> condition) {
+        waitWhileNot(condition, -1);
+    }
+
     public static boolean waitWhile(Supplier<Boolean> condition, long timeout) {
         long start = System.currentTimeMillis();
         while(condition.get() && (timeout < 0 || System.currentTimeMillis() - start < timeout)) {
@@ -58,13 +62,32 @@ public class Platform {
         return !condition.get();
     }
 
+    public static boolean waitWhileNot(Supplier<Boolean> condition, long timeout) {
+        long start = System.currentTimeMillis();
+        while(!condition.get() && (timeout < 0 || System.currentTimeMillis() - start < timeout)) {
+            sleepReal(10);
+        }
+        return condition.get();
+    }
+
     public static void waitWhile(Supplier<Boolean> condition, Runnable post) {
         waitWhile(condition, post, -1);
+    }
+
+    public static void waitWhileNot(Supplier<Boolean> condition, Runnable post) {
+        waitWhileNot(condition, post, -1);
     }
 
     public static void waitWhile(Supplier<Boolean> condition, Runnable post, long timeout) {
         wait.execute(() -> {
             if(waitWhile(condition, timeout))
+                runLater(post);
+        });
+    }
+
+    public static void waitWhileNot(Supplier<Boolean> condition, Runnable post, long timeout) {
+        wait.execute(() -> {
+            if(waitWhileNot(condition, timeout))
                 runLater(post);
         });
     }

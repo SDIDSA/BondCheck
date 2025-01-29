@@ -1,14 +1,13 @@
 {
-  "background_primary": "#FFFFFFFF",
-  "background_secondary": "#EEEEEEFF",
-  "background_tertiary": "#DDDDDDFF",
+  "background_primary": "#EEEEEE",
+  "background_secondary": "#CCCCCC",
+  "background_tertiary": "#DDDDDD",
 
-  "text_primary" : "#272224FF",
-  "text_secondary" : "#735d62FF",
-  "text_muted" : "#6e6d6dFF",
-  "text_error": "#b51200FF",
-  "text_positive" : "#27AE60FF",
+  "text_primary" : "#272224",
+  "text_secondary" : "#735d62",
+  "text_muted" : "#6e6d6d",
+  "text_error": "#b51200",
+  "text_positive" : "#27AE60",
 
-  "accent_1" : "#E7184CFF",
-  "accent_2" : "#d0c0caFF"
+  "accent_1" : "#E7184C"
 }

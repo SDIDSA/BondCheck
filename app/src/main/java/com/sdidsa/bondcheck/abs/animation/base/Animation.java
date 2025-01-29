@@ -16,9 +16,7 @@ import com.sdidsa.bondcheck.abs.animation.view.position.TranslateXAnimation;
 import com.sdidsa.bondcheck.abs.animation.view.position.TranslateYAnimation;
 import com.sdidsa.bondcheck.abs.animation.view.scale.ScaleXYAnimation;
 import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
-
-import java.util.Random;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public abstract class Animation {
     public static final String SLOW = "animation_slow";
@@ -59,6 +57,8 @@ public abstract class Animation {
     private Runnable before;
     private Runnable onFinished;
 
+    private boolean disableTimeScale = false;
+
     private int cycleCount = 1;
 
     protected Animation(long duration) {
@@ -70,17 +70,20 @@ public abstract class Animation {
     }
 
     public void init() {
-        if(before != null) {
+        if (before != null) {
             Platform.runLater(before);
         }
     }
 
     private long start;
-    public void start() {
+
+    @SuppressWarnings("unchecked")
+    public <T extends Animation> T start() {
         stop();
         init();
         start = System.nanoTime();
         Platform.runBack(this::preUpdate);
+        return (T) this;
     }
 
     public void stop() {
@@ -101,8 +104,33 @@ public abstract class Animation {
         return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Animation> T setDisableTimeScale(boolean disableTimeScale) {
+        this.disableTimeScale = disableTimeScale;
+        return (T) this;
+    }
+
     public Runnable getOnFinished() {
         return onFinished;
+    }
+
+    public Animation reverse() {
+        Animation t = this;
+        return new Animation(t.duration) {
+            @Override
+            public void update(float v) {
+                t.update(1 - v);
+            }
+
+            @Override
+            public void init() {
+                t.init();
+                t.update(1);
+            }
+        }
+                .setOnFinished(t.onFinished)
+                .setInterpolator(t.interpolator)
+                .setBefore(t.before);
     }
 
     @SuppressWarnings("unchecked")
@@ -133,18 +161,20 @@ public abstract class Animation {
     private float p = 0;
     private boolean running = false;
     int rep;
+
     private void preUpdate() {
         rep = 1;
-        if(running) {
+        if (running) {
             start = System.nanoTime();
             return;
         }
         running = true;
-        long d = (long) (duration * timeScale);
-        if(d == 0) {
+        long d = disableTimeScale ? duration : (long) (duration * timeScale);
+        if (d == 0) {
+            running = false;
             Platform.runLater(() -> {
                 update(1);
-                if(onFinished != null) onFinished.run();
+                if (onFinished != null) onFinished.run();
             });
             return;
         }
@@ -153,17 +183,17 @@ public abstract class Animation {
             inst.postFrameCallback(new Choreographer.FrameCallback() {
                 @Override
                 public void doFrame(long now) {
-                    if(!running) return;
+                    if (!running) return;
                     dt = (now - start) / 1000000;
                     p = (float) (dt) / d;
                     p = p < 0 ? 0 : p > 1 ? 1 : p;
-                    if(p >= 1) {
+                    if (p >= 1) {
                         update(1f);
                         running = false;
-                        if(onFinished != null) {
+                        if (onFinished != null) {
                             onFinished.run();
                         }
-                        if(rep < cycleCount || cycleCount == INDEFINITE) {
+                        if (rep < cycleCount || cycleCount == INDEFINITE) {
                             running = true;
                             rep++;
                             start = System.nanoTime();
@@ -188,7 +218,7 @@ public abstract class Animation {
         }
         sb.append(getClass().getSimpleName());
 
-        if(this instanceof ViewAnimation va && va.getView() != null) {
+        if (this instanceof ViewAnimation va && va.getView() != null) {
             sb.append(" for ");
             sb.append(va.getView().getClass().getSimpleName());
         }
@@ -207,24 +237,24 @@ public abstract class Animation {
         return toString(0);
     }
 
-    public static Animation fadeInUp(Context owner, View...views) {
+    public static Animation fadeInUp(Context owner, View... views) {
         return fadeInUp(owner, 0, views);
     }
 
-    public static Animation fadeInUp(Context owner, int offset, View...views) {
+    public static Animation fadeInUp(Context owner, int offset, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 0, 1));
-            res.addAnimation(new TranslateYAnimation(view, ContextUtils.by(owner) + offset, offset));
+            res.addAnimation(new TranslateYAnimation(view, SizeUtils.by(owner) + offset, offset));
         }
         return res;
     }
 
-    public static Animation fadeInUp(Context owner, float factor, View...views) {
+    public static Animation fadeInUp(Context owner, float factor, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 0, 1));
-            res.addAnimation(new TranslateYAnimation(view, ContextUtils.by(owner) * factor , 0));
+            res.addAnimation(new TranslateYAnimation(view, SizeUtils.by(owner) * factor, 0));
         }
         return res;
     }
@@ -232,20 +262,24 @@ public abstract class Animation {
     public static Animation fadeInRight(Context owner, View view) {
         return new ParallelAnimation(300)
                 .addAnimation(new AlphaAnimation(view, 1))
-                .addAnimation(new TranslateXAnimation(view,-ContextUtils.by(owner), 0));
+                .addAnimation(new TranslateXAnimation(view, -SizeUtils.by(owner), 0));
     }
 
     public static Animation fadeInLeft(Context owner, View view) {
-        return new ParallelAnimation(300)
-                .addAnimation(new AlphaAnimation(view, 1))
-                .addAnimation(new TranslateXAnimation(view,ContextUtils.by(owner), 0));
+        return fadeInLeft(owner, view, 1);
     }
 
-    public static Animation fadeOutUp(Context owner, View...views) {
+    public static Animation fadeInLeft(Context owner, View view, float targetAlpha) {
+        return new ParallelAnimation(300)
+                .addAnimation(new AlphaAnimation(view, targetAlpha))
+                .addAnimation(new TranslateXAnimation(view, SizeUtils.by(owner), 0));
+    }
+
+    public static Animation fadeOutUp(Context owner, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 1, 0));
-            res.addAnimation(new TranslateYAnimation(view, 0, -ContextUtils.by(owner)));
+            res.addAnimation(new TranslateYAnimation(view, 0, -SizeUtils.by(owner)));
         }
         return res;
     }
@@ -253,27 +287,27 @@ public abstract class Animation {
     public static Animation fadeInDown(Context owner, View view) {
         return new ParallelAnimation(300)
                 .addAnimation(new AlphaAnimation(view, 0, 1))
-                .addAnimation(new TranslateYAnimation(view, -ContextUtils.by(owner), 0));
+                .addAnimation(new TranslateYAnimation(view, -SizeUtils.by(owner), 0));
     }
 
-    public static Animation fadeOutDown(Context owner, View...views) {
+    public static Animation fadeOutDown(Context owner, View... views) {
         return fadeOutDown(owner, 0, views);
     }
 
-    public static Animation fadeOutDown(Context owner, int offset, View...views) {
+    public static Animation fadeOutDown(Context owner, int offset, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 1, 0));
-            res.addAnimation(new TranslateYAnimation(view, offset, ContextUtils.by(owner) + offset));
+            res.addAnimation(new TranslateYAnimation(view, offset, SizeUtils.by(owner) + offset));
         }
         return res;
     }
 
-    public static Animation fadeOutDown(Context owner, float factor, View...views) {
+    public static Animation fadeOutDown(Context owner, float factor, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 1, 0));
-            res.addAnimation(new TranslateYAnimation(view, 0, ContextUtils.by(owner) * factor));
+            res.addAnimation(new TranslateYAnimation(view, 0, SizeUtils.by(owner) * factor));
         }
         return res;
     }
@@ -281,30 +315,36 @@ public abstract class Animation {
     public static Animation fadeOutRight(Context owner, View view) {
         return new ParallelAnimation(300)
                 .addAnimation(new AlphaAnimation(view, 1, 0))
-                .addAnimation(new TranslateXAnimation(view, 0, ContextUtils.by(owner)));
+                .addAnimation(new TranslateXAnimation(view, 0, SizeUtils.by(owner)));
     }
 
-    public static Animation fadeInScaleUp(View...views) {
+    public static Animation fadeOutLeft(Context owner, View view) {
+        return new ParallelAnimation(300)
+                .addAnimation(new AlphaAnimation(view, 1, 0))
+                .addAnimation(new TranslateXAnimation(view, 0, -SizeUtils.by(owner)));
+    }
+
+    public static Animation fadeInScaleUp(View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, 0, 1));
             res.addAnimation(new ScaleXYAnimation(view, downscale, 1));
         }
         return res;
     }
 
-    public static Animation fadeInScaleUp(float targetAlpha, View...views) {
+    public static Animation fadeInScaleUp(float targetAlpha, View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             res.addAnimation(new AlphaAnimation(view, targetAlpha).setLateFrom(view::getAlpha));
             res.addAnimation(new ScaleXYAnimation(view, downscale, 1));
         }
         return res;
     }
 
-    public static Animation scaleUpIn(View...views) {
+    public static Animation scaleUpIn(View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             view.setScaleX(downscale);
             view.setScaleY(downscale);
             res.addAnimation(new ScaleXYAnimation(view, 1));
@@ -339,9 +379,9 @@ public abstract class Animation {
                 .addAnimation(new ScaleXYAnimation(view, downscale));
     }
 
-    public static Animation scaleDownOut(View...views) {
+    public static Animation scaleDownOut(View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             view.setScaleX(1f);
             view.setScaleY(1f);
             res.addAnimation(new ScaleXYAnimation(view, downscale));
@@ -349,46 +389,24 @@ public abstract class Animation {
         return res;
     }
 
-    public static SequenceAnimation sequenceFadeInUp(Context owner, View...views) {
+    public static SequenceAnimation sequenceFadeInUp(Context owner, View... views) {
         SequenceAnimation anim = new SequenceAnimation(300)
                 .setInterpolator(Interpolator.OVERSHOOT)
                 .setDelay(-250);
         for (View view : views) {
             view.setAlpha(0);
-            anim.addAnimation( Animation.fadeInUp(owner, view));
+            anim.addAnimation(Animation.fadeInUp(owner, view));
         }
         return anim;
     }
 
-    public static SequenceAnimation sequenceFadeInRandom(Context owner, View...views) {
-        SequenceAnimation anim = new SequenceAnimation(300)
-                .setInterpolator(Interpolator.OVERSHOOT)
-                .setDelay(-250);
-        for (int i = 0; i < views.length; i++) {
-            View view = views[i];
-            view.setAlpha(0);
-            int dir = i % 4;
-            switch (dir) {
-                case 0 ->
-                    anim.addAnimation( Animation.fadeInUp(owner, view));
-                case 1 ->
-                    anim.addAnimation( Animation.fadeInDown(owner, view));
-                case 2 ->
-                    anim.addAnimation( Animation.fadeInLeft(owner, view));
-                case 3 ->
-                    anim.addAnimation( Animation.fadeInRight(owner, view));
-            }
-        }
-        return anim;
-    }
-
-    public static SequenceAnimation sequenceFadeOutRight(Context owner, View...views) {
+    public static SequenceAnimation sequenceFadeOutRight(Context owner, View... views) {
         SequenceAnimation anim = new SequenceAnimation(300)
                 .setInterpolator(Interpolator.EASE_OUT)
                 .setDelay(-250);
         for (View view : views) {
             view.setAlpha(1);
-            anim.addAnimation( Animation.fadeOutRight(owner, view));
+            anim.addAnimation(Animation.fadeOutRight(owner, view));
         }
         return anim;
     }
@@ -398,9 +416,9 @@ public abstract class Animation {
         return new AlphaAnimation(300, view, 1);
     }
 
-    public static Animation fadeOut(View...views) {
+    public static Animation fadeOut(View... views) {
         ParallelAnimation res = new ParallelAnimation(300);
-        for(View view : views) {
+        for (View view : views) {
             view.setAlpha(1f);
             res.addAnimation(new AlphaAnimation(300, view, 0));
         }

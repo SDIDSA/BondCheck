@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -14,13 +15,16 @@ import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.Gradient;
 import com.sdidsa.bondcheck.abs.components.layout.GradientStop;
+import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
+import com.sdidsa.bondcheck.abs.components.layout.abs.Cornered;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.util.List;
 
-public class LinearBox extends LinearLayout {
+public class LinearBox extends LinearLayout implements Cornered {
     private final Property<Float> spacing;
     protected final Context owner;
 
@@ -37,6 +41,8 @@ public class LinearBox extends LinearLayout {
         setBackground(background);
         setForeground(foreground);
 
+        setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+
         spacing = new Property<>(0f);
         spacing.addListener((ov, nv) -> applySpacing(nv));
 
@@ -46,7 +52,7 @@ public class LinearBox extends LinearLayout {
     }
 
     private void applySpacing(double spacing) {
-        int rs = ContextUtils.dipToPx(spacing, owner);
+        int rs = SizeUtils.dipToPx(spacing, owner);
         GradientDrawable divider = (GradientDrawable) ResourcesCompat.getDrawable(
                 owner.getResources(), R.drawable.divider_shape,null);
         if(divider==null) {
@@ -72,7 +78,7 @@ public class LinearBox extends LinearLayout {
     }
 
     public void setPadding(float padding) {
-        ContextUtils.setPaddingUnified(this, padding, owner);
+        PaddingUtils.setPaddingUnified(this, padding, owner);
     }
 
     public void setBackground(int color) {
@@ -96,28 +102,69 @@ public class LinearBox extends LinearLayout {
     }
 
     public void setBorder(@ColorInt int color, float width) {
-        background.setStroke(ContextUtils.dipToPx(width, owner), color);
+        background.setStroke(SizeUtils.dipToPx(width, owner), color);
     }
 
+    @Override
     public void setCornerRadius(float radius) {
-        background.setCornerRadius(ContextUtils.dipToPx(radius, owner));
-        foreground.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        int px = SizeUtils.dipToPx(radius, owner);
+        background.setCornerRadius(px);
+        foreground.setCornerRadius(px);
     }
 
+    @Override
+    public void setCornerRadius(float[] radius) {
+        background.setCornerRadii(radius);
+        foreground.setCornerRadii(radius);
+    }
+
+    @Override
+    public void setCornerRadiusTop(float radius) {
+        setCornerRadius(CornerUtils.cornerTopRadius(owner, radius));
+    }
+
+    @Override
     public void setCornerRadiusBottom(float radius) {
-        int val = ContextUtils.dipToPx(radius, owner);
-        background.setCornerRadii(new float[]{
-                0, 0,
-                0, 0,
-                val, val,
-                val, val
-        });
-        foreground.setCornerRadii(new float[]{
-                0, 0,
-                0, 0,
-                val, val,
-                val, val
-        });
+        setCornerRadius(CornerUtils.cornerBottomRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusRight(float radius) {
+        setCornerRadius(CornerUtils.cornerRightRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusLeft(float radius) {
+        setCornerRadius(CornerUtils.cornerLeftRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusTopLeft(float radius) {
+        setCornerRadius(CornerUtils.cornerTopLeftRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusTopRight(float radius) {
+        setCornerRadius(CornerUtils.cornerTopRightRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusBottomRight(float radius) {
+        setCornerRadius(CornerUtils.cornerBottomRightRadius(owner, radius));
+    }
+
+    @Override
+    public void setCornerRadiusBottomLeft(float radius) {
+        setCornerRadius(CornerUtils.cornerBottomLeftRadius(owner, radius));
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    public float[] getCornerRadius() {
+        return background.getCornerRadii();
     }
 
     public void setAlignment(Alignment alignment) {

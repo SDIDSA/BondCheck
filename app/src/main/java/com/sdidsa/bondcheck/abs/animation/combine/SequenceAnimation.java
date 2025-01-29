@@ -52,7 +52,7 @@ public class SequenceAnimation extends Animation implements CombineAnimation{
     }
 
     @Override
-    public void start() {
+    public <T extends Animation> T start() {
         isRunning = true;
         Platform.runBack(() -> {
             for (int i = 0; i < animations.size() && !Thread.currentThread().isInterrupted(); i++) {
@@ -72,6 +72,7 @@ public class SequenceAnimation extends Animation implements CombineAnimation{
                 last.setOnFinished(getOnFinished());
             }
         });
+        return null;
     }
 
     @Override

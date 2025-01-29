@@ -14,9 +14,10 @@ import com.sdidsa.bondcheck.abs.animation.view.padding.UnifiedPaddingAnimation;
 import com.sdidsa.bondcheck.abs.components.controls.image.Image;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.media.Media;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class MediaEntry extends Image implements Styleable {
     private final int size;
@@ -31,11 +32,11 @@ public class MediaEntry extends Image implements Styleable {
         super(owner);
         setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT));
         this.size = size;
-        setSize(ContextUtils.pxToDip(size, owner));
+        setSize(SizeUtils.pxToDip(size, owner));
 
         press = new ParallelAnimation(300)
                 .addAnimations(new UnifiedPaddingAnimation(view,
-                        ContextUtils.dipToPx(10, owner)))
+                        SizeUtils.dipToPx(10, owner)))
                 .addAnimations(new AlphaAnimation(view, .8f))
                 .setInterpolator(Interpolator.EASE_OUT);
         release = new ParallelAnimation(300)
@@ -49,7 +50,7 @@ public class MediaEntry extends Image implements Styleable {
 
         setPadding(0, 0, 0, 0);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void select() {
@@ -66,7 +67,7 @@ public class MediaEntry extends Image implements Styleable {
         setImageResource(R.drawable.empty);
         media.getThumbnail(
                 getOwner(),
-                size,
+                size * 2,
                 this::setImageBitmap,
                 () -> setImageResource(R.drawable.problem)
         );
@@ -78,8 +79,4 @@ public class MediaEntry extends Image implements Styleable {
         view.setBackgroundColor(style.getAccent());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

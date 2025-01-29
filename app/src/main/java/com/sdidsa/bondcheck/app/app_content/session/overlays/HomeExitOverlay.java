@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sdidsa.bondcheck.abs.App;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.MultipleOptionOverlay;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
 import com.sdidsa.bondcheck.app.app_content.auth.login.Login;
 import com.sdidsa.bondcheck.app.services.Action;
@@ -33,6 +34,7 @@ public class HomeExitOverlay extends MultipleOptionOverlay {
                     Intent killService = new Intent(owner, SocketService.class);
                     owner.stopService(killService);
                     addOnHidden(() -> ContextUtils.loadPage(owner, Login.class));
+                    UiCache.clearAll();
                     hide();
                 } else {
                     ContextUtils.toast(owner, "problem_string");

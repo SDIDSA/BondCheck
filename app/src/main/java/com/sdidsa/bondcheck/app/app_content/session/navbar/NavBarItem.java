@@ -18,13 +18,15 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
-import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.locale.Localized;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.HomePage;
 
@@ -49,7 +51,7 @@ public class NavBarItem extends StackPane implements Localized {
         this.onSelected = onSelected;
 
 
-        icon = new NavBarIcon(owner, fill, outline, 28);
+        icon = new NavBarIcon(owner, fill, outline, NavBar.ICON_SIZE);
 
         setClipToPadding(false);
 
@@ -61,19 +63,19 @@ public class NavBarItem extends StackPane implements Localized {
             }
         });
 
-        ContextUtils.alignInFrame(icon, Alignment.CENTER);
+        AlignUtils.alignInFrame(icon, Alignment.CENTER);
 
         setClickable(true);
         setFocusable(false);
 
         setOnClick(this::select);
 
-        applyLocale(ContextUtils.getLocale(owner));
+        applyLocale(LocaleUtils.getLocale(owner));
     }
 
     public void setWidth(int width) {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(width,
-                ContextUtils.dipToPx(80, owner));
+                SizeUtils.dipToPx(NavBar.ITEM_HEIGHT, owner));
         setLayoutParams(p);
     }
 
@@ -153,7 +155,8 @@ public class NavBarItem extends StackPane implements Localized {
 
             selecting = new ParallelAnimation(300)
                     .addAnimation(new ScaleXYAnimation(icon, 1.25f))
-                    .addAnimation(new TranslateYAnimation(icon, -ContextUtils.dipToPx(20, owner)))
+                    .addAnimation(new TranslateYAnimation(icon,
+                            -SizeUtils.dipToPx(NavBar.ICON_SIZE * 0.75f, owner)))
                     .addAnimation(icon.fadeToSelected(true))
                     .setInterpolator(Interpolator.OVERSHOOT);
 
@@ -163,7 +166,7 @@ public class NavBarItem extends StackPane implements Localized {
             float[] newCr = radius();
             int nw = getWidth();
 
-            Style s = ContextUtils.getStyle(owner).get();
+            Style s = StyleUtils.getStyle(owner).get();
             StyleToColor newFill = isCenter() ? Style.BACK_TER : Style.EMPTY;
             int newColor = newFill.get(s);
 
@@ -197,7 +200,7 @@ public class NavBarItem extends StackPane implements Localized {
                         nw).start();
             } else {
                 Platform.runLater(() -> {
-                    back.setTranslationX(dx * ContextUtils.getLocaleDirection(owner));
+                    back.setTranslationX(dx * LocaleUtils.getLocaleDirection(owner));
                     back.setAlpha(1);
                     back.getLayoutParams().width = nw;
                     back.setLayoutParams(back.getLayoutParams());
@@ -241,8 +244,4 @@ public class NavBarItem extends StackPane implements Localized {
         setScaleX(locale.isRtl() ? -1 : 1);
     }
 
-    @Override
-    public void applyLocale(Property<Locale> locale) {
-        Localized.bindLocale(this, locale);
-    }
 }

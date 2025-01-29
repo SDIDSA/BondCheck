@@ -2,6 +2,8 @@ package com.sdidsa.bondcheck.abs.animation.view.padding;
 
 import android.view.View;
 
+import androidx.core.graphics.Insets;
+
 import com.sdidsa.bondcheck.abs.animation.base.ViewAnimation;
 
 public class PaddingAnimation extends ViewAnimation {
@@ -18,13 +20,64 @@ public class PaddingAnimation extends ViewAnimation {
         this.toBottom = toBottom;
     }
 
+    public PaddingAnimation(long duration, View view, int[] pads) {
+        super(duration, view, 0, 1);
+
+        this.toLeft = pads[0];
+        this.toTop = pads[1];
+        this.toRight = pads[2];
+        this.toBottom = pads[3];
+    }
+
+    public PaddingAnimation(long duration, View view, int[] from, Insets to) {
+        super(duration, view, 0, 1);
+
+        this.toLeft = to.left;
+        this.toTop = to.top;
+        this.toRight = to.right;
+        this.toBottom = to.bottom;
+
+        this.fromLeft = from[0];
+        this.fromTop = from[1];
+        this.fromRight = from[2];
+        this.fromBottom = from[3];
+    }
+
+    public PaddingAnimation(View view, int[] pads) {
+        super(view, 0, 1);
+
+        this.toLeft = pads[0];
+        this.toTop = pads[1];
+        this.toRight = pads[2];
+        this.toBottom = pads[3];
+
+        this.fromLeft = -1;
+        this.fromTop = -1;
+        this.fromRight = -1;
+        this.fromBottom = -1;
+    }
+
+    public PaddingAnimation(View view, int[] from, int[] to) {
+        super(view, 0, 1);
+
+        this.toLeft = to[0];
+        this.toTop = to[1];
+        this.toRight = to[2];
+        this.toBottom = to[3];
+
+        this.fromLeft = from[0];
+        this.fromTop = from[1];
+        this.fromRight = from[2];
+        this.fromBottom = from[3];
+    }
+
     @Override
     public void init() {
         super.init();
-        fromLeft = getView().getPaddingLeft();
-        fromTop = getView().getPaddingTop();
-        fromRight = getView().getPaddingRight();
-        fromBottom = getView().getPaddingBottom();
+        if(fromLeft == -1) fromLeft = getView().getPaddingLeft();
+        if(fromTop == -1) fromTop = getView().getPaddingLeft();
+        if(fromRight == -1) fromRight = getView().getPaddingLeft();
+        if(fromBottom == -1) fromBottom = getView().getPaddingLeft();
     }
 
     @Override

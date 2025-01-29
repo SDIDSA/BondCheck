@@ -6,4 +6,6 @@ public interface Loading {
     void startLoading();
     void stopLoading();
     View getView();
+
+    boolean isRunning();
 }

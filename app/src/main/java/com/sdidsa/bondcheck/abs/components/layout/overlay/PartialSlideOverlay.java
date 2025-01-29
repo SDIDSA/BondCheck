@@ -5,7 +5,7 @@ import android.view.Gravity;
 
 import androidx.core.graphics.Insets;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public abstract class PartialSlideOverlay extends SlideOverlay {
     private final float margin = 15;
@@ -32,19 +32,19 @@ public abstract class PartialSlideOverlay extends SlideOverlay {
     public void applySystemInsets(Insets insets) {
         this.insets = insets;
         LayoutParams params = (LayoutParams) list.getLayoutParams();
-        int marg = ContextUtils.dipToPx(margin, owner);
+        int marg = SizeUtils.dipToPx(margin, owner);
 
         params.gravity = Gravity.BOTTOM;
         params.bottomMargin = insets.bottom + marg;
         params.rightMargin = marg;
         params.leftMargin = marg;
-        requestLayout();
+        list.setLayoutParams(params);
     }
 
     @Override
     protected void setHeight(int height) {
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, height);
-        int marg = ContextUtils.dipToPx(margin, owner);
+        int marg = SizeUtils.dipToPx(margin, owner);
         params.gravity = Gravity.BOTTOM;
         params.bottomMargin = (insets == null ? 0 : insets.bottom) + marg;
         params.rightMargin = marg;

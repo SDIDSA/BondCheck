@@ -2,12 +2,12 @@ package com.sdidsa.bondcheck.app.app_content.auth.login;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.Gravity;
 
 import androidx.core.graphics.Insets;
 
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
@@ -17,16 +17,13 @@ import com.sdidsa.bondcheck.abs.components.controls.button.ColoredButton;
 import com.sdidsa.bondcheck.abs.components.controls.input.InputField;
 import com.sdidsa.bondcheck.abs.components.controls.input.InputUtils;
 import com.sdidsa.bondcheck.abs.components.controls.input.PasswordField;
-import com.sdidsa.bondcheck.abs.components.controls.scratches.ColoredSeparator;
-import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
 import com.sdidsa.bondcheck.abs.components.controls.text.ColoredLabel;
 import com.sdidsa.bondcheck.abs.components.controls.text.Label;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
-import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
@@ -39,6 +36,7 @@ import com.sdidsa.bondcheck.models.requests.UserRequest;
 
 import java.io.IOException;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public class Login extends ConnectPage {
@@ -91,23 +89,6 @@ public class Login extends ConnectPage {
 
         extra.setSpacing(20);
 
-        HBox sep = new HBox(owner);
-        sep.setGravity(Gravity.CENTER_VERTICAL);
-        sep.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        Label or = new ColoredLabel(owner, Style.TEXT_SEC, "or_you_can")
-                .setFont(new Font(18));
-
-        sep.addView(new ColoredSeparator(owner,Orientation.HORIZONTAL, 0,
-                Style.TEXT_SEC));
-        sep.addView(or);
-        sep.addView(new ColoredSeparator(owner,Orientation.HORIZONTAL, 0,
-                Style.TEXT_SEC));
-
-        ContextUtils.setMarginHorizontal(or, owner, 15);
-
-        extra.addView(sep);
-
         LoginWithButton google = new LoginWithButton(owner, "google", R.drawable.google);
         LoginWithButton facebook = new LoginWithButton(owner, "facebook", R.drawable.facebook);
 
@@ -142,14 +123,14 @@ public class Login extends ConnectPage {
                 Store.setJwtToken(token, t -> ContextUtils.setToken(owner, token));
                 Store.setUserId(id, null);
                 Store.setRememberUsername(username.getValue(), null);
-                clearCache();
+                UiCache.clearAll();
                 Platform.runLater(() -> BondCheck.loadSession(owner));
             }else if(gr.code() == 500) {
                 ContextUtils.toast(owner, "problem_string");
             }else {
-                assert gr.errorBody() != null;
-                try {
-                    InputUtils.applyErrors(this, gr.errorBody().string());
+                try (ResponseBody erB = gr.errorBody()) {
+                    assert erB != null;
+                    InputUtils.applyErrors(this, erB.string());
                 } catch (IOException e) {
                     ContextUtils.toast(owner, "problem_string");
                     ErrorHandler.handle(e, "applying errors received from server");

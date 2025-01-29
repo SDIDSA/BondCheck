@@ -18,6 +18,7 @@ public class SpinLoading extends ColorIcon implements Loading {
 
         loader = new RotateAnimation(2000, this, 0, 360)
                 .setInterpolator(Interpolator.LINEAR)
+                .setDisableTimeScale(true)
                 .setCycleCount(Animation.INDEFINITE);
     }
 
@@ -45,6 +46,11 @@ public class SpinLoading extends ColorIcon implements Loading {
         running = false;
         setRotation(0);
         loader.stop();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     @Override

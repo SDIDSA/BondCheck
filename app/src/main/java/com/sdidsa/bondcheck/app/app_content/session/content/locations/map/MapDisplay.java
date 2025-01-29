@@ -1,16 +1,13 @@
 package com.sdidsa.bondcheck.app.app_content.session.content.locations.map;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Outline;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
@@ -18,18 +15,17 @@ import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.ColoredStackPane;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.http.services.SessionService;
 import com.sdidsa.bondcheck.models.DBLocation;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.CustomZoomButtonsDisplay;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 public class MapDisplay extends ColoredStackPane {
@@ -37,7 +33,8 @@ public class MapDisplay extends ColoredStackPane {
     private final IMapController mapController;
 
     private final LayerSelector layerSelect;
-    private final Marker startMarker;
+
+    private final CircleOverlay userMarker;
 
     public MapDisplay(Context owner) {
         super(owner, Style.BACK_PRI);
@@ -56,17 +53,9 @@ public class MapDisplay extends ColoredStackPane {
         mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         mapView.setDestroyMode(false);
 
-        Drawable icon = ResourcesCompat.getDrawable(owner.getResources(),
-                R.drawable.map_marker, null);
-        int size = ContextUtils.dipToPx(48, owner);
-        Bitmap markerBmp = Bitmap.createScaledBitmap(drawableToBitmap(icon), size, size, true);
+        userMarker = new CircleOverlay(owner, mapView, Style.ACCENT);
 
-        startMarker = new Marker(mapView);
-        Drawable mark = new BitmapDrawable(owner.getResources(), markerBmp);
-        startMarker.setIcon(mark);
-        startMarker.setOnMarkerClickListener((marker, map) -> true);
-        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        mapView.getOverlays().add(startMarker);
+        mapView.getOverlays().add(userMarker);
 
         RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(mapView);
         mRotationGestureOverlay.setEnabled(true);
@@ -81,7 +70,7 @@ public class MapDisplay extends ColoredStackPane {
 
         layerSelect = new LayerSelector(owner, mapView);
 
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setTileSource(MapTileStyle.OSM_BRIGHT);
 
         addView(mapView);
         addAligned(layers, Alignment.TOP_RIGHT);
@@ -108,51 +97,54 @@ public class MapDisplay extends ColoredStackPane {
     public void showLayerSelect() {
         addAligned(layerSelect, Alignment.TOP_RIGHT, 0);
         layerSelect.setOffset(0, 1);
+        layerSelect.setAlpha(0);
         Animation.fadeInLeft(owner, layerSelect)
                 .setInterpolator(Interpolator.OVERSHOOT)
                 .start();
     }
 
-    public void load(DBLocation location) {
+    public void load(DBLocation location, String user_id) {
         GeoPoint center = new GeoPoint(location.latitude(),
                 location.longitude());
         mapController.setZoom(15.0);
         mapController.setCenter(center);
-        mapView.setTilesScaleFactor(ContextUtils.scale);
-        startMarker.setPosition(center);
-        postInvalidate();
+        mapView.setTilesScaleFactor(SizeUtils.scale);
+
+        float sizeDp = 48;
+        float borderDp = 10;
+        int size = (SizeUtils.dipToPx(sizeDp, owner) / 4) * 4;
+        int border = ((size + SizeUtils.dipToPx(borderDp, owner)) / 4) * 4;
+        userMarker.setGeoPoint(center);
+        userMarker.setRadiusPx(border / 2);
+        mapView.postInvalidate();
+        SessionService.getAvatar(owner, user_id, size, (bmp) -> {
+            RoundedBitmapDrawable mark = RoundedBitmapDrawableFactory.create(owner.getResources(), bmp);
+            mark.setCornerRadius(size / 2f);
+            userMarker.setAvatar(bmp);
+            mapView.postInvalidate();
+        });
     }
 
     private void center() {
-        mapController.animateTo(startMarker.getPosition(), 17d, 500L, 0f);
-    }
+        double currentZoom = mapView.getZoomLevelDouble();
+        double targetZoom = 17d;
+        long minDuration = 500L;
+        long maxDuration = 2000L;
 
-    public static Bitmap drawableToBitmap (Drawable drawable) {
-        Bitmap bitmap;
+        double zoomDifference = Math.abs(currentZoom - targetZoom);
 
-        if (drawable instanceof BitmapDrawable bitmapDrawable) {
-            if(bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
+        double normalizedDifference = Math.min(zoomDifference / 10, 1);
 
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
+        long duration = (long) (minDuration + (normalizedDifference * (maxDuration - minDuration)));
 
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+        mapController.animateTo(userMarker.getGeoPoint(), 17d, duration, 0f);
     }
 
     private class OutlineProvider extends ViewOutlineProvider {
         @Override
         public void getOutline(View view, Outline outline) {
             outline.setRoundRect(new Rect(0,0,
-                    view.getWidth(), view.getHeight()), ContextUtils.dipToPx(15, owner));
+                    view.getWidth(), view.getHeight()), SizeUtils.dipToPx(15, owner));
         }
     }
 }

@@ -2,40 +2,34 @@ package com.sdidsa.bondcheck.abs.components.controls.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Outline;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.widget.AppCompatImageView;
 
-import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.locale.Localized;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class Image extends StackPane implements Localized {
     protected final Context owner;
     private Runnable onClick;
 
-    private final GradientDrawable fore;
     private final GradientDrawable backFill;
 
     private boolean autoMirror;
-    protected final AppCompatImageView view;
-
-    private float radius = 0;
+    protected final ImageView view;
 
     public Image(Context owner, @DrawableRes int res) {
         super(owner);
         this.owner = owner;
 
-        view = new AppCompatImageView(owner);
+        view = new ImageView(owner);
 
         setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -49,11 +43,9 @@ public class Image extends StackPane implements Localized {
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT));
 
-        fore = new GradientDrawable();
         backFill = new GradientDrawable();
-        view.setForeground(fore);
         view.setClipToOutline(true);
-        view.setOutlineProvider(new OutlineProvider());
+        view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
 
         setCornerRadius(0);
 
@@ -64,12 +56,6 @@ public class Image extends StackPane implements Localized {
         setBackground(backFill);
 
         if(res != -1) setImageResource(res);
-
-        applyLocale(ContextUtils.getLocale(owner));
-    }
-
-    public void setImageAlpha(float alpha) {
-        view.setAlpha(alpha);
     }
 
     public void setImageResource(int resId) {
@@ -88,7 +74,7 @@ public class Image extends StackPane implements Localized {
     @SuppressWarnings("unchecked")
     public <T extends Image> T setImagePadding(float val) {
         LayoutParams p = (LayoutParams) view.getLayoutParams();
-        int v = ContextUtils.dipToPx(val, owner);
+        int v = SizeUtils.dipToPx(val, owner);
         p.leftMargin = v;
         p.topMargin = v;
         p.rightMargin = v;
@@ -117,7 +103,7 @@ public class Image extends StackPane implements Localized {
     }
 
     public void setBorder(int color, float width) {
-        backFill.setStroke(ContextUtils.dipToPx(width, owner), color);
+        backFill.setStroke(SizeUtils.dipToPx(width, owner), color);
     }
 
     public Image(Context owner) {
@@ -125,14 +111,16 @@ public class Image extends StackPane implements Localized {
     }
 
     public void setCornerRadius(float radius) {
-        this.radius = radius;
-        fore.setCornerRadius(ContextUtils.dipToPx(radius, owner));
-        backFill.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        setCornerRadius(CornerUtils.cornerRadius(owner, radius));
+    }
+
+    public void setCornerRadius(float[] radius) {
+        view.setCornerRadii(radius);
+        backFill.setCornerRadii(radius);
     }
 
     public void setRadiusNoClip(float radius) {
-        fore.setCornerRadius(ContextUtils.dipToPx(radius, owner));
-        backFill.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        backFill.setCornerRadius(SizeUtils.dipToPx(radius, owner));
     }
 
     @Override
@@ -144,7 +132,7 @@ public class Image extends StackPane implements Localized {
     }
 
     private void updateLayoutDirection() {
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner));
     }
 
     public void setOnClick(Runnable onClick) {
@@ -153,24 +141,29 @@ public class Image extends StackPane implements Localized {
     }
 
     public void setHeight(float height) {
-        getLayoutParams().height = Math.max(ContextUtils.dipToPx(height, owner), 0);
-        requestLayout();
+        getLayoutParams().height = Math.max(SizeUtils.dipToPx(height, owner), 0);
+        setLayoutParams(getLayoutParams());
     }
 
     public void setWidth(float width) {
-        getLayoutParams().width = Math.max(0, ContextUtils.dipToPx(width, owner));
-        requestLayout();
+        getLayoutParams().width = Math.max(0, SizeUtils.dipToPx(width, owner));
+        setLayoutParams(getLayoutParams());
     }
 
-    private float size;
     public void setSize(float size) {
-        this.size = size;
         setWidth(size);
         setHeight(size);
     }
 
-    public float getSize() {
-        return size;
+    public void setSize(float width, float height) {
+        setWidth(width);
+        setHeight(height);
+    }
+
+    protected float viewAlpha = 1.0f;
+    public void setViewAlpha(float alpha) {
+        viewAlpha = alpha;
+        view.setAlpha(alpha);
     }
 
     public void fire() {
@@ -187,18 +180,4 @@ public class Image extends StackPane implements Localized {
         view.setScaleX(autoMirror && locale.isRtl() ? -1 : 1);
     }
 
-    @Override
-    public void applyLocale(Property<Locale> locale) {
-        Localized.bindLocale(this, locale);
-    }
-
-    private class OutlineProvider extends ViewOutlineProvider {
-
-        @Override
-        public void getOutline(View view, Outline outline) {
-            outline.setRoundRect(new Rect(0,0,
-                    view.getWidth(), view.getHeight()), ContextUtils.dipToPx(radius, owner));
-        }
-
-    }
 }

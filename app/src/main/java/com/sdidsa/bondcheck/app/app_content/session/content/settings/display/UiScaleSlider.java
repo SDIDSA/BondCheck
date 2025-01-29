@@ -10,7 +10,9 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.ColoredStackPane;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -30,14 +32,14 @@ public class UiScaleSlider extends StackPane {
         int baseSize = 7;
 
         setClipToPadding(false);
-        ContextUtils.setPaddingVertical(this, 15, owner);
+        PaddingUtils.setPaddingVertical(this, 15, owner);
 
-        tickWidth = ContextUtils.dipToPx(baseSize / 3, owner);
-        tickHeight = ContextUtils.dipToPx(baseSize * 2, owner);
+        tickWidth = SizeUtils.dipToPx(baseSize / 3, owner);
+        tickHeight = SizeUtils.dipToPx(baseSize * 2, owner);
 
         StackPane track = new ColoredStackPane(owner, Style.TEXT_MUT);
         track.setAlpha(.5f);
-        track.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, ContextUtils.dipToPx(baseSize, owner)));
+        track.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, SizeUtils.dipToPx(baseSize, owner)));
 
         ticks = new StackPane(owner);
         ticks.setLayoutParams(new LayoutParams(-1, -2));
@@ -60,7 +62,7 @@ public class UiScaleSlider extends StackPane {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        int direction = ContextUtils.getLocaleDirection(owner);
+        int direction = LocaleUtils.getLocaleDirection(owner);
         if(changed) {
             ticks.removeAllViews();
             tickSpace = (right - left) / (tickCount - 1);
@@ -75,7 +77,7 @@ public class UiScaleSlider extends StackPane {
 
     public void setTickCount(int tickCount) {
         this.tickCount = tickCount;
-        requestLayout();
+        setLayoutParams(getLayoutParams());
     }
 
     public void setSelectedIndex(int selectedIndex) {
@@ -84,7 +86,7 @@ public class UiScaleSlider extends StackPane {
     public void setSelectedIndex(int selectedIndex, boolean noChange) {
         this.selectedIndex = selectedIndex;
         if(onChanged != null && !noChange) onChanged.accept(selectedIndex);
-        requestLayout();
+        setLayoutParams(getLayoutParams());
     }
 
     public int getSelectedIndex() {
@@ -105,7 +107,7 @@ public class UiScaleSlider extends StackPane {
                 performClick();
             case MotionEvent.ACTION_MOVE:
                 float touchX = event.getX();
-                if (ContextUtils.isRtl(owner)) {
+                if (LocaleUtils.isRtl(owner)) {
                     touchX = getWidth() - touchX;
                 }
                 int atInd = (int) ((touchX + (tickSpace / 2f)) / tickSpace);

@@ -19,7 +19,10 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -111,7 +114,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
             appName = new Label(itemView.getContext(), "");
             appCheckbox = new CheckBox(owner);
 
-            ContextUtils.setPaddingVertical(root, 15, owner);
+            PaddingUtils.setPaddingVertical(root, 15, owner);
 
             appIcon.setSize(28);
             appName.setFont(new Font(22));
@@ -119,13 +122,13 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
 
             root.setOnClickListener(e -> appCheckbox.toggle());
 
-            ContextUtils.setMarginRight(appIcon, owner, 15);
+            MarginUtils.setMarginRight(appIcon, owner, 15);
 
             root.setAlignment(Alignment.CENTER);
 
-            root.addViews(appIcon, appName, ContextUtils.spacer(owner, Orientation.HORIZONTAL), appCheckbox);
+            root.addViews(appIcon, appName, SpacerUtils.spacer(owner, Orientation.HORIZONTAL), appCheckbox);
 
-            applyStyle(ContextUtils.getStyle(owner));
+            applyStyle(StyleUtils.getStyle(owner));
         }
 
         @Override
@@ -133,9 +136,5 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
             appName.setFill(style.getTextNormal());
         }
 
-        @Override
-        public void applyStyle(Property<Style> style) {
-            Styleable.bindStyle(this, style);
-        }
     }
 }

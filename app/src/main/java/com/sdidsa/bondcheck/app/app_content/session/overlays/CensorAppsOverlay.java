@@ -22,7 +22,9 @@ import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.privacy.AppListAdapter;
 
 import java.util.List;
@@ -34,7 +36,7 @@ public class CensorAppsOverlay extends PartialSlideOverlay {
 
         list.setAlignment(Alignment.CENTER);
 
-        ColoredLinearLoading loading = new ColoredLinearLoading(owner, Style.TEXT_SEC, 18);
+        ColoredLinearLoading loading = new ColoredLinearLoading(owner, Style.TEXT_SEC, 15);
         loading.startLoading();
         list.addView(loading);
 
@@ -59,7 +61,7 @@ public class CensorAppsOverlay extends PartialSlideOverlay {
 
                     ColoredStackPane sp = new ColoredStackPane(owner, Style.BACK_PRI);
                     sp.addCentered(lab);
-                    ContextUtils.setPaddingVertical(sp, 20, owner);
+                    PaddingUtils.setPaddingVertical(sp, 20, owner);
                     sp.setElevation(2000);
 
                     Button ready = new ColoredButton(owner, Style.ACCENT, s -> Color.WHITE, "save");
@@ -78,18 +80,18 @@ public class CensorAppsOverlay extends PartialSlideOverlay {
                     addOnHidden(() -> adapter.setSelectedApps(Store.getCensoredApps()));
 
                     ColoredHBox buttons = new ColoredHBox(owner, Style.BACK_PRI);
-                    ContextUtils.setPaddingVertical(buttons, 20, owner);
+                    PaddingUtils.setPaddingVertical(buttons, 20, owner);
                     buttons.addViews(cancel, ready);
-                    ContextUtils.spacer(ready);
-                    ContextUtils.spacer(cancel);
-                    ContextUtils.spacer(recyclerView);
+                    SpacerUtils.spacer(ready);
+                    SpacerUtils.spacer(cancel);
+                    SpacerUtils.spacer(recyclerView);
 
-                    ContextUtils.setMarginLeft(ready, owner, 15);
+                    MarginUtils.setMarginLeft(ready, owner, 15);
 
                     Platform.runLater(() -> {
                         list.removeView(loading);
                         list.setAlignment(Alignment.TOP_CENTER);
-                        ContextUtils.setPadding(list, 20,0,20,0, owner);
+                        PaddingUtils.setPadding(list, 20,0,20,0, owner);
                         list.addView(sp);
                         list.addView(recyclerView);
                         list.addView(buttons);
