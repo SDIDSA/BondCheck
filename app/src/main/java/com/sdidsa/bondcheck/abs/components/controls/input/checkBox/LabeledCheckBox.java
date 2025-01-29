@@ -9,7 +9,8 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
 import com.sdidsa.bondcheck.abs.data.property.Property;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class LabeledCheckBox extends HBox implements Styleable {
 
@@ -37,12 +38,12 @@ public class LabeledCheckBox extends HBox implements Styleable {
 
         setDefaultFocusHighlightEnabled(false);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
     public void setSpacing(float spacing) {
-        ContextUtils.setMarginRight(checkBox, owner, spacing);
+        MarginUtils.setMarginRight(checkBox, owner, spacing);
     }
 
     public void setFont(Font font) {
@@ -82,8 +83,4 @@ public class LabeledCheckBox extends HBox implements Styleable {
                         style.getTextSecondary()));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

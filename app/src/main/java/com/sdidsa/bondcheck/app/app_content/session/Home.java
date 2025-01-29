@@ -12,7 +12,8 @@ import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.fragment.FragmentPane;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.MultipleOptionOverlay;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.HomePage;
 import com.sdidsa.bondcheck.app.app_content.session.content.history.History;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.Items;
@@ -29,7 +30,7 @@ public class Home extends Page {
         super(owner);
 
         content = new FragmentPane(owner, HomePage.class);
-        ContextUtils.spacer(content);
+        SpacerUtils.spacer(content);
 
         navBar = new NavBar(owner, this);
 

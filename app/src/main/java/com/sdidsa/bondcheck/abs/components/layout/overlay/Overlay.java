@@ -11,7 +11,7 @@ import com.sdidsa.bondcheck.abs.animation.base.ColorAnimation;
 import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 
 import java.util.ArrayList;
@@ -181,5 +181,17 @@ public abstract class Overlay extends StackPane {
     public void back() {
         if(autoHide)
             hide();
+    }
+
+    public boolean isShowing() {
+        return show.isRunning();
+    }
+
+    public boolean isHiding() {
+        return hide.isRunning();
+    }
+
+    public boolean isAnimating() {
+        return isShowing() || isHiding();
     }
 }

@@ -2,6 +2,7 @@ package com.sdidsa.bondcheck.abs.components.layout.fragment;
 
 import android.content.Context;
 
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 
@@ -13,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Fragment extends VBox {
     private static final ConcurrentHashMap<Class<? extends Fragment>, Fragment> cache =
             new ConcurrentHashMap<>();
+
+    private FragmentPane pane;
 
     public Fragment(Context owner) {
         super(owner);
@@ -39,17 +42,10 @@ public class Fragment extends VBox {
     }
 
     public static void clearCache(Class<? extends Fragment> type) {
-        List<Class<? extends Fragment>> concerned;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            concerned = cache.keySet().stream()
-                    .filter(type::isAssignableFrom)
-                    .toList();
-        } else {
-            concerned = new ArrayList<>();
-            for (Class<? extends Fragment> c : cache.keySet()) {
-                if (type.isAssignableFrom(c)) {
-                    concerned.add(c);
-                }
+        List<Class<? extends Fragment>> concerned = new ArrayList<>();
+        for (Class<? extends Fragment> c : cache.keySet()) {
+            if (type.isAssignableFrom(c)) {
+                concerned.add(c);
             }
         }
         concerned.forEach(t -> {
@@ -61,8 +57,20 @@ public class Fragment extends VBox {
         concerned.forEach(cache::remove);
     }
 
+    public FragmentPane getPane() {
+        return pane;
+    }
+
+    public void setPane(FragmentPane pane) {
+        this.pane = pane;
+    }
+
     public static void clearCache() {
         cache.clear();
+    }
+
+    static {
+        UiCache.register(Fragment::clearCache);
     }
 
     public void setup(boolean direction) {

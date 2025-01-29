@@ -19,13 +19,19 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.OverlayOption;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class UiScaleOverlay extends PartialSlideOverlay {
+    public UiScaleOverlay(Context owner) {
+        this(owner, "title", () -> "", (s) -> {});
+    }
 
     public UiScaleOverlay(Context owner, String key, Supplier<String> get,
                           Consumer<String> set, OverlayOption...options) {
@@ -47,7 +53,7 @@ public class UiScaleOverlay extends PartialSlideOverlay {
         save.setWidth(120);
         save.setPadding(10);
 
-        top.addViews(title, ContextUtils.spacer(owner, Orientation.HORIZONTAL), save);
+        top.addViews(title, SpacerUtils.spacer(owner, Orientation.HORIZONTAL), save);
 
         UiScaleSlider slider = new UiScaleSlider(owner);
 
@@ -64,7 +70,7 @@ public class UiScaleOverlay extends PartialSlideOverlay {
         preview.setBackground(Color.BLACK);
         preview.setCornerRadius(15);
         preview.setSize(256);
-        preview.setElevation(ContextUtils.dipToPx(10, owner));
+        preview.setElevation(SizeUtils.dipToPx(10, owner));
 
         list.addView(top);
         list.addView(preSlider);
@@ -101,7 +107,7 @@ public class UiScaleOverlay extends PartialSlideOverlay {
     }
 
     private Bitmap generatePreviewBitmap(float scaleFactor, Context context) {
-        Style style = ContextUtils.getStyle(context).get();
+        Style style = StyleUtils.getStyle(context).get();
         int size = ContextUtils.getScreenHeight(owner) / 7;
 
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);

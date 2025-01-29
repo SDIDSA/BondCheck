@@ -6,8 +6,9 @@ import androidx.annotation.DrawableRes;
 
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.data.property.Property;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
-import com.sdidsa.bondcheck.app.app_content.session.content.main.shared.HomeSection;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.app.app_content.session.content.shared.HomeSection;
 
 public class HistorySection extends HomeSection {
     protected boolean ready = false;
@@ -30,7 +31,7 @@ public class HistorySection extends HomeSection {
 
         root.setLayoutParams(new LayoutParams(
                 LayoutParams.MATCH_PARENT,
-                ContextUtils.dipToPx(HomeSection.ITEM_SIZE + 10, owner)));
+                SizeUtils.dipToPx(HomeSection.ITEM_SIZE + 10, owner)));
 
         more = new ViewMore(owner);
 
@@ -45,7 +46,7 @@ public class HistorySection extends HomeSection {
 
     public void addItem(HistoryThumbnail thumb, int index) {
         root.addView(thumb, index);
-        ContextUtils.setMarginRight(thumb, owner, 15);
+        MarginUtils.setMarginRight(thumb, owner, 15);
     }
 
     public void clearItems() {

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.sdidsa.bondcheck.abs.components.controls.input.checkBox.CheckBox;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 import java.util.function.Consumer;
 
@@ -21,7 +21,7 @@ public class CheckSetting extends Setting {
 
         check = new CheckBox(owner, 24);
 
-        addPostLabel(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        addPostLabel(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         addPostLabel(check);
 
         check.checkedProperty().addListener((ov, nv) -> {

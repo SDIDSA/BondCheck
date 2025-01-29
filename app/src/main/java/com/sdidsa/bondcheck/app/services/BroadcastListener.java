@@ -13,8 +13,9 @@ import java.util.function.Consumer;
 public class BroadcastListener extends BroadcastReceiver {
     private final HashMap<Action, ArrayList<Consumer<Intent>>> listeners;
 
-    public BroadcastListener() {
+    public BroadcastListener(Context context) {
         listeners = new HashMap<>();
+        Action.registerListener(context, this);
     }
 
     public void onIntent(Action event, Consumer<Intent> listener) {

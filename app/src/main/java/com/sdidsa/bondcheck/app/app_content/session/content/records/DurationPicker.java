@@ -14,7 +14,9 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 import java.util.function.Consumer;
 
@@ -22,7 +24,7 @@ public class DurationPicker extends HBox {
     private Consumer<Integer> onPick;
     public DurationPicker(Context owner) {
         super(owner);
-        ContextUtils.setPaddingHorizontalVertical(this, 15, 0, owner);
+        PaddingUtils.setPaddingHorizontalVertical(this, 15, 0, owner);
         setVisibility(GONE);
         DurationButton fifteen = new DurationButton(owner, 15);
         DurationButton thirty = new DurationButton(owner, 30);
@@ -37,18 +39,18 @@ public class DurationPicker extends HBox {
         thirty.setPadding(15);
         sixty.setPadding(15);
 
-        ContextUtils.spacer(fifteen, Orientation.HORIZONTAL);
-        ContextUtils.spacer(thirty, Orientation.HORIZONTAL);
-        ContextUtils.spacer(sixty, Orientation.HORIZONTAL);
+        SpacerUtils.spacer(fifteen, Orientation.HORIZONTAL);
+        SpacerUtils.spacer(thirty, Orientation.HORIZONTAL);
+        SpacerUtils.spacer(sixty, Orientation.HORIZONTAL);
 
-        ContextUtils.setMarginLeft(thirty, owner, 15);
-        ContextUtils.setMarginLeft(sixty, owner, 15);
-        ContextUtils.setMarginLeft(close, owner, 5);
+        MarginUtils.setMarginLeft(thirty, owner, 15);
+        MarginUtils.setMarginLeft(sixty, owner, 15);
+        MarginUtils.setMarginLeft(close, owner, 5);
 
         setAlpha(0);
         setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        ContextUtils.setMarginTop(this, owner, 15);
+        MarginUtils.setMarginTop(this, owner, 15);
 
         addViews(fifteen, thirty, sixty, close);
     }
@@ -82,7 +84,7 @@ public class DurationPicker extends HBox {
     private class DurationButton extends ColoredButton {
         public DurationButton(Context owner, int duration) {
             super(owner, Style.BACK_SEC, Style.TEXT_NORM, duration + "s");
-            ContextUtils.spacer(this, Orientation.HORIZONTAL);
+            SpacerUtils.spacer(this, Orientation.HORIZONTAL);
             setFont(new Font(18, FontWeight.MEDIUM));
             setPadding(15);
 

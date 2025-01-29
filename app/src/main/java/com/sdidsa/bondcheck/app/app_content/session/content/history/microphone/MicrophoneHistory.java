@@ -5,7 +5,7 @@ import android.content.Context;
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.components.Page;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.app.app_content.session.Home;

@@ -16,7 +16,7 @@ import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.components.layout.ColoredStackPane;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class FloatingService extends Service {
     private WindowManager mWindowManager;
@@ -34,7 +34,7 @@ public class FloatingService extends Service {
     public void onCreate() {
         super.onCreate();
         setTheme(R.style.Theme_BondCheck_Dark);
-        margin = ContextUtils.dipToPx(10, this);
+        margin = SizeUtils.dipToPx(10, this);
         // Create the floating view layout
         root = new ColoredStackPane(this, Style.ACCENT);
         root.setPadding(12);
@@ -86,6 +86,7 @@ public class FloatingService extends Service {
                         return true;
                     case MotionEvent.ACTION_UP:
                         snapToSide();
+                        root.performClick();
                         return true;
                 }
                 return false;

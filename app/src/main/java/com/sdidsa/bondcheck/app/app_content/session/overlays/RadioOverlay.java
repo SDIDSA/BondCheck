@@ -19,7 +19,7 @@ import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.data.ConcurrentArrayList;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 import java.util.function.Consumer;
 
@@ -58,7 +58,7 @@ public class RadioOverlay extends PartialSlideOverlay implements Styleable {
 
         list.addView(root);
 
-        addOnShowing(() -> applyStyle(ContextUtils.getStyle(owner).get()));
+        addOnShowing(() -> applyStyle(StyleUtils.getStyle(owner).get()));
 
         Button save = new ColoredButton(owner, Style.ACCENT, s -> Color.WHITE, "save");
         save.setFont(new Font(18, FontWeight.MEDIUM));
@@ -74,9 +74,9 @@ public class RadioOverlay extends PartialSlideOverlay implements Styleable {
             }
         });
 
-        group.selected().addListener((ov, nv) -> applyStyle(ContextUtils.getStyle(owner).get()));
+        group.selected().addListener((ov, nv) -> applyStyle(StyleUtils.getStyle(owner).get()));
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void setOnSave(Consumer<String> onSave) {
@@ -102,7 +102,7 @@ public class RadioOverlay extends PartialSlideOverlay implements Styleable {
         buttons.add(button);
         group.addRadio(button.getRadio());
 
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     @Override
@@ -115,8 +115,4 @@ public class RadioOverlay extends PartialSlideOverlay implements Styleable {
         }
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

@@ -6,9 +6,6 @@ import com.sdidsa.bondcheck.abs.utils.Assets;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class DiskAddressCache {
 
@@ -38,11 +35,7 @@ public class DiskAddressCache {
     public String getAddress(String key) {
         File readFrom = keyToFile(key);
         if(exists(key)) {
-            try (InputStream is = new FileInputStream(readFrom)) {
-                return Assets.readFile(readFrom);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return Assets.readFile(readFrom);
         }
         return null;
     }

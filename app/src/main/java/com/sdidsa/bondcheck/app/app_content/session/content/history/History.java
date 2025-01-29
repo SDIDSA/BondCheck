@@ -1,7 +1,6 @@
 package com.sdidsa.bondcheck.app.app_content.session.content.history;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
@@ -10,8 +9,9 @@ import com.sdidsa.bondcheck.abs.components.Page;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.Refresh;
 import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.HomePage;
 import com.sdidsa.bondcheck.app.app_content.session.content.history.location.LocationHistory;
@@ -37,8 +37,8 @@ public class History extends HomePage {
     private Animation hideOther;
 
     public History(Context owner) {
-        super(owner, "History");
-        ContextUtils.setPadding(content, 15, 0, 15, 15, owner);
+        super(owner, "history");
+        PaddingUtils.setPadding(content, 15, 0, 15, 15, owner);
 
         histories = new VBox(owner);
         histories.setSpacing(10);
@@ -62,7 +62,7 @@ public class History extends HomePage {
         });
         top.addView(refresh);
 
-        scrollable.setOnMaybeRefresh(this::onMaybeRefresh);
+        scrollable.setOnRefreshGesture(this::onMaybeRefresh);
         scrollable.setOnRefresh(this::onRefresh);
 
         content.addView(histories);

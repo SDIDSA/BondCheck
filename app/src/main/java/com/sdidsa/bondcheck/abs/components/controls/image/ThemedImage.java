@@ -8,7 +8,7 @@ import androidx.annotation.DrawableRes;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ThemedImage extends Image implements Styleable {
     private @DrawableRes int darkRes;
@@ -24,7 +24,7 @@ public class ThemedImage extends Image implements Styleable {
         this.darkRes = darkRes;
         this.lightRes = lightRes;
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -51,8 +51,4 @@ public class ThemedImage extends Image implements Styleable {
         }
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

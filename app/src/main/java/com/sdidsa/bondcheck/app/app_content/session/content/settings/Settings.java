@@ -10,7 +10,8 @@ import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.HomePage;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.about.AboutGroup;
@@ -46,7 +47,7 @@ public class Settings extends HomePage {
         logout.extendLabel();
         logout.addPostLabel(new ColoredIcon(owner, Style.TEXT_ERR, R.drawable.logout, 26)
                 .setAutoMirror(true));
-        ContextUtils.setMargin(logout, owner, 15, 0, 15, 15);
+        MarginUtils.setMargin(logout, owner, 15, 0, 15, 15);
         logout.setOnClick(() -> {
             Home home = Page.getInstance(owner, Home.class);
             assert home != null;

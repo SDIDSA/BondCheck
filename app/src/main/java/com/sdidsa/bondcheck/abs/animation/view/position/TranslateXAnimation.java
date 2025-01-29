@@ -2,12 +2,11 @@ package com.sdidsa.bondcheck.abs.animation.view.position;
 
 import android.view.View;
 
+import com.sdidsa.bondcheck.abs.animation.base.ValueAnimation;
 import com.sdidsa.bondcheck.abs.animation.base.ViewAnimation;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
 
 public class TranslateXAnimation extends ViewAnimation {
-
-    private float from = -1, to = -1;
 
     public TranslateXAnimation(View view, float to) {
         super(view, to);
@@ -15,28 +14,47 @@ public class TranslateXAnimation extends ViewAnimation {
 
     public TranslateXAnimation(View view,float from, float to) {
         super(view, from, to);
-        setFrom(from);
     }
 
     public TranslateXAnimation(long duration, View view, float to) {
         super(duration, view, to);
     }
 
+    private int direction = 1;
     @Override
     public void init() {
         super.init();
 
-        if(from == -1) from = getFrom();
-        if(to == -1) to = getTo();
+        int newDirection = LocaleUtils.getLocaleDirection(getView());
 
-        int d = ContextUtils.getLocaleDirection(getView());
-        setTo(to * d);
-        setFrom(from * d);
+        if(newDirection != direction) {
+            if(!initialFrom) {
+                setFrom(getFrom() * -1);
+            }
+            setTo(getTo() * -1);
+        }
+        direction = newDirection;
+    }
+
+    public void reset() {
+        this.direction = 1;
+    }
+
+    @Override
+    public void setTo(float to) {
+        super.setTo(to);
+        reset();
+    }
+
+    @Override
+    public <T extends ValueAnimation> T setFrom(float from) {
+        reset();
+        return super.setFrom(from);
     }
 
     @Override
     protected float getFrom(View view) {
-        return view.getTranslationX() * ContextUtils.getLocaleDirection(getView());
+        return view.getTranslationX();
     }
 
     @Override

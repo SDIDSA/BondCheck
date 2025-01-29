@@ -2,7 +2,7 @@ package com.sdidsa.bondcheck.abs.components.layout.abs;
 
 import android.content.Context;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class CornerUtils {
     public static float[] cornerRadius(Context owner,
@@ -10,15 +10,24 @@ public class CornerUtils {
                                        float topRight,
                                        float bottomRight,
                                        float bottomLeft) {
-        int topLeftPx = ContextUtils.dipToPx(topLeft, owner);
-        int topRightPx = ContextUtils.dipToPx(topRight, owner);
-        int bottomRightPx = ContextUtils.dipToPx(bottomRight, owner);
-        int bottomLeftPx = ContextUtils.dipToPx(bottomLeft, owner);
+        int topLeftPx = SizeUtils.dipToPx(topLeft, owner);
+        int topRightPx = SizeUtils.dipToPx(topRight, owner);
+        int bottomRightPx = SizeUtils.dipToPx(bottomRight, owner);
+        int bottomLeftPx = SizeUtils.dipToPx(bottomLeft, owner);
         return new float[]{
                 topLeftPx, topLeftPx,
                 topRightPx, topRightPx,
                 bottomRightPx, bottomRightPx,
                 bottomLeftPx, bottomLeftPx
+        };
+    }
+
+    public static float[] noRadius() {
+        return new float[]{
+                0,0,
+                0,0,
+                0,0,
+                0,0
         };
     }
 
@@ -56,5 +65,9 @@ public class CornerUtils {
 
     public static float[] cornerBottomLeftRadius(Context owner, float radius) {
         return cornerRadius(owner, 0, 0, 0, radius);
+    }
+
+    public static float[] cornerTopBottomRadius(Context owner, float topRadius, float bottomRadius) {
+        return cornerRadius(owner, topRadius, topRadius, bottomRadius, bottomRadius);
     }
 }

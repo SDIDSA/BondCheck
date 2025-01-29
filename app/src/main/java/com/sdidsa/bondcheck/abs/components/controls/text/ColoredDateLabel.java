@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredDateLabel extends DateLabel implements Styleable {
     private final StyleToColor fill;
@@ -26,7 +26,7 @@ public class ColoredDateLabel extends DateLabel implements Styleable {
         this.fill = fill;
         this.back = back;
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -39,8 +39,4 @@ public class ColoredDateLabel extends DateLabel implements Styleable {
         }
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

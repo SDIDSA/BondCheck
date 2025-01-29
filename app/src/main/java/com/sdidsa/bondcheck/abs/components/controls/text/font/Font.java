@@ -6,7 +6,7 @@ import android.graphics.fonts.FontFamily;
 import androidx.annotation.NonNull;
 
 import com.sdidsa.bondcheck.abs.App;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -106,7 +106,7 @@ public class Font {
     }
 
     public float getSize() {
-        return size * ContextUtils.scale;
+        return size * SizeUtils.scale;
     }
 
     @NonNull

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
 import com.sdidsa.bondcheck.app.app_content.session.overlays.BondSettingsOverlay;
 import com.sdidsa.bondcheck.app.app_content.session.overlays.EditProfileOverlay;

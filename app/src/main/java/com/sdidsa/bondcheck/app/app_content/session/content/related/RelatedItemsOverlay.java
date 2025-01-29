@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.ScrollView;
 
 import com.sdidsa.bondcheck.abs.App;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.loading.ColoredSpinLoading;
@@ -12,7 +13,7 @@ import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.Item;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.ItemOverlayHeader;
 import com.sdidsa.bondcheck.http.services.Service;
@@ -41,6 +42,14 @@ public class RelatedItemsOverlay extends PartialSlideOverlay {
         }
 
         return found;
+    }
+
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(RelatedItemsOverlay::clearCache);
     }
 
     private final VBox items;

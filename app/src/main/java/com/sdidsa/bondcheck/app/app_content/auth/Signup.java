@@ -17,8 +17,9 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.auth.login.Login;
 import com.sdidsa.bondcheck.http.services.Service;
 import com.sdidsa.bondcheck.models.requests.UserRequest;
@@ -26,6 +27,7 @@ import com.sdidsa.bondcheck.models.responses.GenericResponse;
 
 import java.io.IOException;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public class Signup extends ConnectPage {
@@ -66,7 +68,7 @@ public class Signup extends ConnectPage {
         next.setOnClick(this::signup);
         consent.checkedProperty().addListener((ov, nv) -> next.setEnabled(nv));
 
-        root.addViews(username, email, password, consent, next, ContextUtils.spacer(owner, Orientation.VERTICAL));
+        root.addViews(username, email, password, consent, next, SpacerUtils.spacer(owner, Orientation.VERTICAL));
     }
 
     @Override
@@ -106,9 +108,9 @@ public class Signup extends ConnectPage {
             } else if (gr.code() == 500) {
                 ContextUtils.toast(owner, "problem_string");
             } else {
-                assert gr.errorBody() != null;
-                try {
-                    InputUtils.applyErrors(this, gr.errorBody().string());
+                try (ResponseBody erB = gr.errorBody()){
+                    assert erB != null;
+                    InputUtils.applyErrors(this, erB.string());
                 } catch (IOException e) {
                     ContextUtils.toast(owner, "problem_string");
                     ErrorHandler.handle(e, "applying errors returned from server");

@@ -1,9 +1,10 @@
 package com.sdidsa.bondcheck.http.services;
 
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Bitmap;
 
 import com.sdidsa.bondcheck.abs.App;
+import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.models.requests.AssetRequest;
@@ -15,6 +16,7 @@ import com.sdidsa.bondcheck.models.responses.GenericResponse;
 import com.sdidsa.bondcheck.models.responses.UserResponse;
 
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import okhttp3.MultipartBody;
@@ -90,5 +92,15 @@ public interface SessionService extends Service {
         }else {
             onUser.accept(user.getUser());
         }
+    }
+
+    static void getAvatar(Context owner, String userId, int size, Consumer<Bitmap> onBitmap) {
+        getUser(owner, userId, user ->
+                ImageProxy.getImageThumb(owner, user.getAvatar(), size, onBitmap));
+    }
+
+    static void getAvatar(Context owner, String userId, int size, BiConsumer<UserResponse, Bitmap> onBitmap) {
+        getUser(owner, userId, user ->
+                ImageProxy.getImageThumb(owner, user.getAvatar(), size, bmp -> onBitmap.accept(user, bmp)));
     }
 }

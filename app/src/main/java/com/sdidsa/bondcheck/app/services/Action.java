@@ -15,7 +15,11 @@ public enum Action {
     STYLE_CHANGED(),
     LOCALE_CHANGED(),
 
-    SOCKET_EVENT();
+    SOCKET_EVENT(),
+
+    PAUSE_SHARING(),
+
+    RESUME_SHARING();
 
     public static final String INTENT_FILTER = "com.sdidsa.bondcheck.ACTION_REQUEST";
 
@@ -25,14 +29,8 @@ public enum Action {
         return res;
     }
 
-    public static BroadcastListener broadcastListener(Context context) {
-        BroadcastListener res = new BroadcastListener();
-        registerListener(context, res);
-        return res;
-    }
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private static void registerListener(Context context, BroadcastReceiver receiver) {
+    public static void registerListener(Context context, BroadcastReceiver receiver) {
         IntentFilter filter = new IntentFilter(INTENT_FILTER);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);

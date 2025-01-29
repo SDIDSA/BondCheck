@@ -29,10 +29,13 @@ import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.locale.Localized;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.observable.Observable;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class InputField extends StackPane implements Styleable, Localized {
     protected final EditText input;
@@ -78,7 +81,7 @@ public class InputField extends StackPane implements Styleable, Localized {
         input.setTypeface(Font.DEFAULT.getFont());
         input.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
         input.setShowSoftInputOnFocus(true);
-        ContextUtils.setPadding(input, 0, 30, 0, 10, owner);
+        PaddingUtils.setPadding(input, 0, 30, 0, 10, owner);
         input.setBackground(null);
         input.setMaxLines(1);
         input.setLines(1);
@@ -88,13 +91,13 @@ public class InputField extends StackPane implements Styleable, Localized {
 
         preInput = new HBox(owner);
         preInput.setAlignment(Alignment.CENTER_LEFT);
-        ContextUtils.setPadding(preInput, 16, 0, 4, 0, owner);
+        PaddingUtils.setPadding(preInput, 16, 0, 4, 0, owner);
         preInput.addView(input);
 
         StackPane prompts = new StackPane(owner);
         prompts.setClickable(false);
         prompts.setFocusable(false);
-        ContextUtils.setPadding(prompts, 15, 20, 15, 20, owner);
+        PaddingUtils.setPadding(prompts, 15, 20, 15, 20, owner);
 
         prompt.setLabelFor(input.getId());
 
@@ -110,7 +113,7 @@ public class InputField extends StackPane implements Styleable, Localized {
                 .addAnimation(new FontSizeAnimation(error, 12)
                         .setLateTo(() -> font.getSize() * .8f))
                 .addAnimation(new TranslateYAnimation(prompts,
-                        -ContextUtils.dipToPx(12, owner)))
+                        -SizeUtils.dipToPx(12, owner)))
                 .setInterpolator(Interpolator.EASE_OUT);
 
         unfocus = new ParallelAnimation(200)
@@ -153,8 +156,8 @@ public class InputField extends StackPane implements Styleable, Localized {
         setFont(new Font(20));
 
         setBackground(background);
-        applyStyle(ContextUtils.getStyle(owner));
-        applyLocale(ContextUtils.getLocale(owner));
+        applyStyle(StyleUtils.getStyle(owner));
+        applyLocale(LocaleUtils.getLocale(owner));
     }
 
     public EditText getInput() {
@@ -261,7 +264,7 @@ public class InputField extends StackPane implements Styleable, Localized {
     }
 
     public void setRadius(float radius) {
-        background.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        background.setCornerRadius(SizeUtils.dipToPx(radius, owner));
     }
 
     public void setBackgroundColor(int color) {
@@ -282,19 +285,10 @@ public class InputField extends StackPane implements Styleable, Localized {
         error.setTextColor(style.getTextError());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
-
     @SuppressLint("RtlHardcoded")
     @Override
     public void applyLocale(Locale locale) {
         input.setGravity(Gravity.CENTER_VERTICAL | (locale.isRtl() ? Gravity.RIGHT : Gravity.LEFT));
     }
 
-    @Override
-    public void applyLocale(Property<Locale> locale) {
-        Localized.bindLocale(this, locale);
-    }
 }

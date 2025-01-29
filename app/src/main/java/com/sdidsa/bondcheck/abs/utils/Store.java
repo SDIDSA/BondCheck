@@ -27,6 +27,7 @@ public class Store {
     //PRIVACY SETTINGS
     private static final String SCREEN_CONSENT = "screen_consent";
     private static final String CENSOR_APPS = "censor_apps";
+    private static final String PAUSE_SHARING = "pause_sharing";
 
     //NOTIFICATION SETTINGS
     private static final String NOTIFY_ON = "notify_on_";
@@ -171,6 +172,14 @@ public class Store {
         setCensorApps(arr.toString(), onSuccess);
     }
 
+    public static boolean isPauseSharing() {
+        return Boolean.parseBoolean(getSetting(PAUSE_SHARING, "false"));
+    }
+
+    public static void setPauseSharing(boolean value, Consumer<Boolean> onSuccess) {
+        setBoolean(PAUSE_SHARING, value, onSuccess);
+    }
+
     public static String getUserId() {
         return getSetting(USER_ID, "-1");
     }
@@ -189,7 +198,7 @@ public class Store {
     }
 
     private static boolean isNotifyOn(String key) {
-        return Boolean.parseBoolean(getSetting(key, "true"));
+        return Boolean.parseBoolean(getSetting(key, "false"));
     }
 
     public static boolean isNotifyOnScreen() {

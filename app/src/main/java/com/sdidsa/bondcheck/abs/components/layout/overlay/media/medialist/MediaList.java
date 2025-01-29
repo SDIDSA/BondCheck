@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sdidsa.bondcheck.abs.data.property.Property;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.media.Media;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -41,12 +42,12 @@ public class MediaList extends RecyclerView {
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         setLayoutManager(lm);
 
-        int size = ContextUtils.getScreenWidth(owner) - ContextUtils.dipToPx(50, owner);
+        int size = ContextUtils.getScreenWidth(owner) - SizeUtils.dipToPx(50, owner);
         adapter = new MediaAdapter(owner, size, selected);
         setAdapter(adapter);
 
         GradientDrawable clip = new GradientDrawable();
-        clip.setCornerRadius(ContextUtils.dipToPx(12, owner));
+        clip.setCornerRadius(SizeUtils.dipToPx(12, owner));
         setBackground(clip);
         setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         setClipToOutline(true);

@@ -6,9 +6,10 @@ import android.graphics.Color;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredButton extends Button implements Styleable {
     private StyleToColor fill;
@@ -29,14 +30,14 @@ public class ColoredButton extends Button implements Styleable {
         this.fill = fill;
         this.textFill = textFill;
 
-        setElevation(ContextUtils.dipToPx(5, owner));
+        setElevation(SizeUtils.dipToPx(5, owner));
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void setTextFill(StyleToColor textFill) {
         this.textFill = textFill;
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
         for(int i = 0; i < content.getChildCount(); i++) {
             if(content.getChildAt(i) instanceof ColoredIcon icon) {
                 icon.setFill(textFill);
@@ -46,13 +47,13 @@ public class ColoredButton extends Button implements Styleable {
 
     public void setFill(StyleToColor fill) {
         this.fill = fill;
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     public void setBorder(StyleToColor border, float width) {
         this.border = border;
         this.borderWidth = width;
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     @Override
@@ -64,8 +65,4 @@ public class ColoredButton extends Button implements Styleable {
         }
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

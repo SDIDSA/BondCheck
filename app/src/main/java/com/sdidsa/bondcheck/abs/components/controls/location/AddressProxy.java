@@ -2,8 +2,8 @@ package com.sdidsa.bondcheck.abs.components.controls.location;
 import android.util.LruCache;
 
 import com.sdidsa.bondcheck.abs.App;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.view.LocationUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.models.DBLocation;
 
@@ -24,9 +24,7 @@ public class AddressProxy {
     }
 
     private static String makeKey(DBLocation location, String lang) {
-        return (location.latitude() + "_" +
-                location.longitude() + "_" +
-                lang).replace(".", "_");
+        return location.round(lang);
     }
 
 
@@ -94,6 +92,6 @@ public class AddressProxy {
     }
 
     private static String fetch(DBLocation location, String lang) {
-        return ContextUtils.getDisplayableAddress(location, lang);
+        return LocationUtils.getDisplayableAddress(location, lang);
     }
 }

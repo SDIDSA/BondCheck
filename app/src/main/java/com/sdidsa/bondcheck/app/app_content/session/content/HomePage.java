@@ -12,20 +12,22 @@ import com.sdidsa.bondcheck.abs.components.controls.text.ColoredLabel;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.components.controls.text.transformationMethods.Capitalize;
-import com.sdidsa.bondcheck.abs.components.layout.ScrollView;
+import com.sdidsa.bondcheck.abs.components.layout.scroll.Scroller;
 import com.sdidsa.bondcheck.abs.components.layout.fragment.Fragment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.ColoredHBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 public abstract class HomePage extends Fragment {
     protected final VBox content;
     protected final HBox top;
     protected final VBox root;
 
-    protected final ScrollView scrollable;
+    protected final Scroller scrollable;
 
     @SuppressLint("ClickableViewAccessibility")
     public HomePage(Context owner, String text) {
@@ -37,7 +39,7 @@ public abstract class HomePage extends Fragment {
 
         top = new ColoredHBox(owner, Style.BACK_PRI);
         top.setGravity(Gravity.CENTER);
-        top.setMinimumHeight(ContextUtils.dipToPx(66, owner));
+        top.setMinimumHeight(SizeUtils.dipToPx(66, owner));
         top.setZ(2000);
 
         ColoredLabel title = new ColoredLabel(owner, Style.TEXT_NORM, text);
@@ -45,7 +47,7 @@ public abstract class HomePage extends Fragment {
         title.setTransformationMethod(new Capitalize());
 
         top.addView(title);
-        top.addView(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        top.addView(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
 
         content = new VBox(owner);
         content.setLayoutParams(
@@ -55,10 +57,10 @@ public abstract class HomePage extends Fragment {
         content.setPadding(20);
         content.setSpacing(20);
 
-        scrollable = new ScrollView(owner);
-        scrollable.addView(content);
+        scrollable = new Scroller(owner);
+        scrollable.setContent(content);
 
-        ContextUtils.spacer(root, Orientation.VERTICAL);
+        SpacerUtils.spacer(root, Orientation.VERTICAL);
 
         root.addView(top);
         root.addView(scrollable);
@@ -69,7 +71,7 @@ public abstract class HomePage extends Fragment {
 
     public void applyInsets(Insets insets) {
         if(insets == null) return;
-        int pad = ContextUtils.dipToPx(20, owner);
-        top.setPadding(pad, insets.top + pad, pad, pad);
+        int pad = SizeUtils.dipToPx(20, owner);
+        top.setPadding(pad, insets.top + pad, pad, pad / 2);
     }
 }

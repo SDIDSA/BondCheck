@@ -10,6 +10,21 @@ public class LinearHeightAnimation extends ViewAnimation {
 
     public LinearHeightAnimation(View view, float to) {
         super(view, to);
+        //check(view);
+    }
+
+    public LinearHeightAnimation(long duration, View view, float to) {
+        super(duration, view, to);
+        check(view);
+    }
+
+    public LinearHeightAnimation( View view, float from, float to) {
+        super(view, from, to);
+        check(view);
+    }
+
+    public LinearHeightAnimation(long duration, View view, float from, float to) {
+        super(duration, view, from, to);
         check(view);
     }
 

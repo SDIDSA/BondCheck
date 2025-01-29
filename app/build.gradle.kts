@@ -1,4 +1,16 @@
+import java.net.NetworkInterface
 import java.util.Properties
+
+
+fun getLocalIp(): String {
+    return NetworkInterface.getNetworkInterfaces()
+        .asSequence()
+        .toList()
+        .flatMap { it.inetAddresses.toList() }
+        .filter { it.isSiteLocalAddress && !it.isLoopbackAddress && it.hostAddress.startsWith("192.168") }
+        .map { it.hostAddress }
+        .firstOrNull() ?: "localhost"
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -25,6 +37,9 @@ android {
                 buildConfigField("String", key.toString(), "\"$value\"")
             }
         }
+
+        val localIp = getLocalIp()
+        buildConfigField("String", "LOCAL_IP", "\"$localIp\"")
     }
 
     buildFeatures {
@@ -74,11 +89,12 @@ android {
 
 dependencies {
     implementation(libs.appcompat)
-    implementation(libs.activity)
     implementation(libs.converter.gson)
     implementation(libs.retrofit)
     implementation(libs.socket.io.client)
     implementation(libs.play.services.location)
     implementation(libs.osmdroid.android)
     implementation(libs.recyclerview)
+    implementation(libs.overscroll.decor.android)
+    implementation(libs.bitmapji)
 }

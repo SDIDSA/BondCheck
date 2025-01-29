@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class Separator extends View {
     private final Context owner;
@@ -14,7 +14,7 @@ public class Separator extends View {
     private Orientation orientation;
     private final float margin;
 
-    private int thickness = 1;
+    private float thickness = 1;
 
     public Separator(Context owner) {
         this(owner, Orientation.HORIZONTAL, 0);
@@ -23,8 +23,6 @@ public class Separator extends View {
     public Separator(Context owner, Orientation orientation, float margin) {
         super(owner);
         this.owner = owner;
-
-        setAlpha(.4f);
 
         this.orientation = orientation;
             this.margin = margin;
@@ -36,29 +34,27 @@ public class Separator extends View {
         apply();
     }
 
-    public Separator setThickness(int thickness) {
+    public void setThickness(float thickness) {
         this.thickness = thickness;
         apply();
-        return this;
     }
 
     private void apply() {
         boolean isVert = orientation == Orientation.VERTICAL;
         boolean hor = !isVert;
 
-        int thickInt = ContextUtils.dipToPx(thickness, owner);
+        int thickInt = SizeUtils.dipToPx(thickness, owner);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                hor ? LinearLayout.LayoutParams.WRAP_CONTENT : thickInt,
-                hor ? thickInt : LinearLayout.LayoutParams.WRAP_CONTENT);
+                hor ? -1 : thickInt,
+                hor ? thickInt : -1);
 
 
-        int marginPx = ContextUtils.dipToPx(margin, owner);
+        int marginPx = SizeUtils.dipToPx(margin, owner);
         params.leftMargin = isVert ? 0 : marginPx;
-        params.rightMargin = params.leftMargin;
+        params.rightMargin = isVert ? 0 : marginPx;
         params.topMargin = isVert ? marginPx : 0;
-        params.bottomMargin = params.topMargin;
+        params.bottomMargin = isVert ? marginPx : 0;
 
-        params.weight = 1;
         setLayoutParams(params);
     }
 

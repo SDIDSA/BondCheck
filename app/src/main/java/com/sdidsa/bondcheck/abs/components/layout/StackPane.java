@@ -10,8 +10,10 @@ import android.widget.FrameLayout;
 import com.sdidsa.bondcheck.abs.components.layout.abs.Bordered;
 import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
 import com.sdidsa.bondcheck.abs.components.layout.abs.Cornered;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class StackPane extends FrameLayout implements Cornered, Bordered {
     protected final Context owner;
@@ -30,7 +32,7 @@ public class StackPane extends FrameLayout implements Cornered, Bordered {
     }
 
     public void setPadding(float padding) {
-        ContextUtils.setPaddingUnified(this, padding, owner);
+        PaddingUtils.setPaddingUnified(this, padding, owner);
     }
 
     public void setBackground(int color) {
@@ -38,13 +40,15 @@ public class StackPane extends FrameLayout implements Cornered, Bordered {
     }
 
     @Override
-    public void setCornerRadius(float radius) {
-        setCornerRadius(CornerUtils.cornerRadius(owner, radius));
+    public boolean performClick() {
+        return super.performClick();
     }
 
     @Override
-    public boolean performClick() {
-        return super.performClick();
+    public void setCornerRadius(float radius) {
+        int px = SizeUtils.dipToPx(radius, owner);
+        background.setCornerRadius(px);
+        foreground.setCornerRadius(px);
     }
 
     @Override
@@ -103,7 +107,7 @@ public class StackPane extends FrameLayout implements Cornered, Bordered {
     }
 
     public void setBorder(int color, float width) {
-        foreground.setStroke(ContextUtils.dipToPx(width, owner), color);
+        foreground.setStroke(SizeUtils.dipToPx(width, owner), color);
     }
 
     public Context getOwner() {
@@ -116,12 +120,12 @@ public class StackPane extends FrameLayout implements Cornered, Bordered {
 
     public void addAligned(View child, Alignment alignment) {
         addView(child);
-        ContextUtils.alignInFrame(child, alignment);
+        AlignUtils.alignInFrame(child, alignment);
     }
 
     public void addAligned(View child, Alignment alignment, int index) {
         addView(child, index);
-        ContextUtils.alignInFrame(child, alignment);
+        AlignUtils.alignInFrame(child, alignment);
     }
 
     @Override

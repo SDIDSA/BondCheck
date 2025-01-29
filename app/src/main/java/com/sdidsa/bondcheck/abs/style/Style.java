@@ -36,7 +36,7 @@ public class Style {
     private final boolean dark;
 
     private Style(boolean dark) {
-        colors= new ConcurrentHashMap<>();
+        colors = new ConcurrentHashMap<>();
         this.dark = dark;
     }
 
@@ -44,15 +44,21 @@ public class Style {
         this.dark = dark;
         colors = new ConcurrentHashMap<>();
         try {
-            JSONObject data = new JSONObject(Objects.requireNonNull(Assets.readAsset(owner, "themes/" + styleName + ".json")));
+            JSONObject data;
+            if (styleName.startsWith("#")) {
+                data = new JSONObject(ColorPalette.generatePalette(styleName, dark).toString());
+            } else {
+                data = new JSONObject(Objects.requireNonNull(
+                        Assets.readAsset(owner, "themes/" + styleName + ".json")));
+            }
             Iterator<String> keys = data.keys();
 
             while (keys.hasNext()) {
                 String key = keys.next();
-                colors.put(key, parseColor(data.getString(key)));
+                colors.put(key, Color.parseColor(data.getString(key)));
             }
-        } catch (JSONException x) {
-            ErrorHandler.handle(x, "loading style ".concat(styleName));
+        } catch (JSONException e) {
+            ErrorHandler.handle(e, "create Style object");
         }
     }
 
@@ -61,7 +67,7 @@ public class Style {
 
         from.colors.forEach((key, value) -> {
             Integer toColor;
-            if((toColor = to.colors.get(key)) != null) {
+            if ((toColor = to.colors.get(key)) != null) {
                 result.colors.put(key,
                         interpolateColor(value, toColor, progress));
             }
@@ -88,25 +94,6 @@ public class Style {
         return v < 0 ? 0 : Math.min(v, 255);
     }
 
-    @ColorInt
-    private static int parseColor(String rgba) {
-        char[] chars = rgba.toCharArray();
-
-        String argb = "#";
-
-        argb += chars[7];
-        argb += chars[8];
-
-        argb += chars[1];
-        argb += chars[2];
-        argb += chars[3];
-        argb += chars[4];
-        argb += chars[5];
-        argb += chars[6];
-
-        return Color.parseColor(argb);
-    }
-
     public boolean isDark() {
         return dark;
     }
@@ -116,14 +103,14 @@ public class Style {
     }
 
     @ColorInt
-    public int getAccent(){
+    public int getAccent() {
         return getAccent(1);
     }
 
     @ColorInt
     @SuppressWarnings("ConstantConditions")
-    public int getAccent(int num){
-        return colors.get("accent_"+num);
+    public int getAccent(int num) {
+        return colors.get("accent_" + num);
     }
 
     @ColorInt

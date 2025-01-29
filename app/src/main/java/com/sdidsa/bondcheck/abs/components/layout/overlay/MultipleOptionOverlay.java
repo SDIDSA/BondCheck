@@ -15,8 +15,10 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.ConcurrentArrayList;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 import java.util.function.Function;
 
@@ -46,7 +48,7 @@ public class MultipleOptionOverlay extends PartialSlideOverlay implements Stylea
         text.centerText();
         text.setFont(new Font(20, FontWeight.MEDIUM));
         text.setLineSpacing(10);
-        ContextUtils.setMarginBottom(text, owner, 20);
+        MarginUtils.setMarginBottom(text, owner, 20);
 
         buttons = new ConcurrentArrayList<>();
 
@@ -54,9 +56,9 @@ public class MultipleOptionOverlay extends PartialSlideOverlay implements Stylea
 
         list.addView(root);
 
-        addOnShowing(() -> applyStyle(ContextUtils.getStyle(owner).get()));
+        addOnShowing(() -> applyStyle(StyleUtils.getStyle(owner).get()));
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void addButton(String text, Runnable onClick) {
@@ -68,7 +70,7 @@ public class MultipleOptionOverlay extends PartialSlideOverlay implements Stylea
         root.addView(button);
         buttons.add(button);
 
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     public void startLoading(String option) {
@@ -95,11 +97,6 @@ public class MultipleOptionOverlay extends PartialSlideOverlay implements Stylea
                 button.applyStyle(style, isSelected.apply(button.getKey())));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
-
     private static class OptionButton extends Button {
         private final ColorIcon colorIcon;
         private final OverlayOption option;
@@ -112,7 +109,7 @@ public class MultipleOptionOverlay extends PartialSlideOverlay implements Stylea
             setTransformationMethod(new Capitalize());
             setOnClick(onClick);
 
-            addPostLabel(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+            addPostLabel(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
             addPostLabel(colorIcon);
         }
 

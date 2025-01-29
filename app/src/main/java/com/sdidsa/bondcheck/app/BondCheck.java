@@ -13,8 +13,9 @@ import androidx.core.content.ContextCompat;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.app.app_content.Loader;
 import com.sdidsa.bondcheck.app.app_content.NetErr;
 import com.sdidsa.bondcheck.app.app_content.auth.Welcome;
@@ -52,23 +53,23 @@ public class BondCheck extends App {
     public void postCreate() {
         super.postCreate();
 
-        receiver = Action.broadcastListener(this);
+        receiver = new BroadcastListener(this);
         receiver.on(Action.KILL_ACTIVITY, this::finish);
 
         Animation.applySpeed(Store.getAnimations());
 
         UiScale uiScale = Store.getScale();
         if(uiScale == UiScale.AUTO)  {
-            int sh = getScreenHeight();
+            int sh = getResources().getDisplayMetrics().heightPixels;
 
-            float dp = ContextUtils.pxToDipNoScale(sh, this);
+            float dp = SizeUtils.pxToDipNoScale(sh, this);
             float scale = 0.0008864f * dp + 0.2304f;
             scale = ((int) (scale * 100)) / 100f;
-            ContextUtils.scale = Math.max(
+            SizeUtils.scale = Math.max(
                     Math.min(scale, UiScale.BIGGEST.getScale()),
                     UiScale.SMALLEST.getScale());
         }else {
-            ContextUtils.scale = Store.getScale().getScale();
+            SizeUtils.scale = Store.getScale().getScale();
         }
 
         Platform.runAfter(() -> loadPage(Loader.class), 200);
@@ -80,7 +81,7 @@ public class BondCheck extends App {
             } else {
                 loadPage(Welcome.class);
             }
-        }, 500);
+        }, 1000);
     }
 
     public static void loadSession(Context owner) {

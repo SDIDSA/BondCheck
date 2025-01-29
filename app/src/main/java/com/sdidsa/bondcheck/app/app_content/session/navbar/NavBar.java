@@ -6,10 +6,10 @@ import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
-import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.history.History;
 import com.sdidsa.bondcheck.app.app_content.session.content.locations.Locations;
@@ -19,6 +19,10 @@ import com.sdidsa.bondcheck.app.app_content.session.content.screenshots.Screensh
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
 
 public class NavBar extends StackPane implements Styleable {
+    public static final float SELECTED_ITEM_HEIGHT = 90;
+    public static final float ITEM_HEIGHT = SELECTED_ITEM_HEIGHT * 0.8f;
+    public static final float ICON_SIZE = ITEM_HEIGHT * 0.4f;
+
     private final NavBarItem homeItem;
     private final NavBarItem screensItem;
     private final NavBarItem microphoneItem;
@@ -84,29 +88,20 @@ public class NavBar extends StackPane implements Styleable {
         addView(root);
 
         int total = ContextUtils.getScreenWidth(owner);
-        //int homeW = (int) (total / 4f);
-        int restW = (int) ((total
-                //- homeW
-        ) / 3f);
+        int restW = (int) (total / 3f);
 
         homeItem.setWidth(restW);
         back.applyClip(true, restW);
-        //screensItem.setWidth(restW);
-        //microphoneItem.setWidth(restW);
         settingsItem.setWidth(restW + 5);
-        //locationItem.setWidth(restW);
         historyItem.setWidth(restW);
 
         root.addView(historyItem);
-        //root.addView(screensItem);
-        //root.addView(microphoneItem);
         root.addView(homeItem);
-        //root.addView(locationItem);
         root.addView(settingsItem);
 
         homeItem.select();
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public HBox getRoot() {
@@ -174,8 +169,4 @@ public class NavBar extends StackPane implements Styleable {
         setBackground(style.getBackgroundSecondary());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

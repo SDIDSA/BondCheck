@@ -20,7 +20,10 @@ import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.components.controls.text.Label;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class Button extends StackPane {
     private final GradientDrawable background;
@@ -42,7 +45,7 @@ public class Button extends StackPane {
         setRadius(12);
         ripple = new RippleDrawable(ColorStateList.valueOf(Color.TRANSPARENT), background, background);
         setBackground(ripple);
-        ContextUtils.setPaddingUnified(this, 15, owner);
+        PaddingUtils.setPaddingUnified(this, 15, owner);
 
         setContentDescription(text);
 
@@ -55,7 +58,7 @@ public class Button extends StackPane {
 
         content = new HBox(owner);
         content.setGravity(Gravity.CENTER);
-        ContextUtils.alignInFrame(content, Alignment.CENTER);
+        AlignUtils.alignInFrame(content, Alignment.CENTER);
 
         content.addView(label);
 
@@ -90,7 +93,7 @@ public class Button extends StackPane {
 
     @SuppressWarnings("unchecked")
     public <T extends Button> T setWidth(float width) {
-        int pxWidth = ContextUtils.dipToPx(width, owner);
+        int pxWidth = SizeUtils.dipToPx(width, owner);
         if(getLayoutParams() != null) {
             getLayoutParams().width = pxWidth;
             setLayoutParams(getLayoutParams());
@@ -178,8 +181,8 @@ public class Button extends StackPane {
     }
 
     public void setRadius(float radius) {
-        background.setCornerRadius(ContextUtils.dipToPx(radius, owner));
-        foreground.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        background.setCornerRadius(SizeUtils.dipToPx(radius, owner));
+        foreground.setCornerRadius(SizeUtils.dipToPx(radius, owner));
     }
 
     public void setBackgroundColor(int color) {

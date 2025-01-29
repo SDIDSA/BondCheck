@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.core.graphics.Insets;
 
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
@@ -11,7 +12,8 @@ import com.sdidsa.bondcheck.abs.animation.view.AlphaAnimation;
 import com.sdidsa.bondcheck.abs.animation.view.position.TranslateXAnimation;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +62,7 @@ public abstract class Page extends StackPane {
                     .setInterpolator(Interpolator.EASE_OUT);
         }
         setAlpha(0);
-        setTranslationX(ContextUtils.by(owner) * direction * ContextUtils.getLocaleDirection(owner));
+        setTranslationX(SizeUtils.by(owner) * direction * LocaleUtils.getLocaleDirection(owner));
 
         return setup;
     }
@@ -70,7 +72,7 @@ public abstract class Page extends StackPane {
         if(destroy == null) {
             destroy = new ParallelAnimation(500)
                     .addAnimation(new AlphaAnimation(this, 0))
-                    .addAnimation(new TranslateXAnimation(this, -direction * ContextUtils.by(owner)))
+                    .addAnimation(new TranslateXAnimation(this, -direction * SizeUtils.by(owner)))
                     .setInterpolator(Interpolator.EASE_OUT);
         }
         return destroy;
@@ -78,6 +80,10 @@ public abstract class Page extends StackPane {
 
     public static void clearCache() {
         cache.clear();
+    }
+
+    static {
+        UiCache.register(Page::clearCache);
     }
 
     public abstract boolean onBack();

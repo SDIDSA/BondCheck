@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.WindowManager;
 
+import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 
 import java.nio.ByteBuffer;
@@ -97,7 +98,7 @@ public class ScreenshotUtils {
             return originalBitmap;
         }
 
-        return Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, true);
+        return ImageProxy.scale(originalBitmap, newWidth, newHeight);
     }
 
     public static Bitmap gaussianBlur(Bitmap src, int radius) {

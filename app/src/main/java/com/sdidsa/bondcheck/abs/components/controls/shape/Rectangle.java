@@ -10,9 +10,9 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.observable.ChangeListener;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class Rectangle extends View {
     private final GradientDrawable background;
@@ -41,21 +41,21 @@ public class Rectangle extends View {
         ChangeListener<Float> sizeListener = (ov, nv) -> {
             ViewGroup.LayoutParams old = getLayoutParams();
             if (getParent() instanceof StackPane) {
-                StackPane.LayoutParams params = new StackPane.LayoutParams(ContextUtils.dipToPx(width.get(), owner), ContextUtils.dipToPx(height.get(), owner));
+                StackPane.LayoutParams params = new StackPane.LayoutParams(SizeUtils.dipToPx(width.get(), owner), SizeUtils.dipToPx(height.get(), owner));
                 if(old instanceof StackPane.LayoutParams oldParam)
                     params.gravity = oldParam.gravity;
                 setLayoutParams(params);
             } else if(getParent() instanceof LinearLayout) {
-                setLayoutParams(new LinearLayout.LayoutParams(ContextUtils.dipToPx(width.get(), owner), ContextUtils.dipToPx(height.get(), owner)));
+                setLayoutParams(new LinearLayout.LayoutParams(SizeUtils.dipToPx(width.get(), owner), SizeUtils.dipToPx(height.get(), owner)));
             } else {
-                setLayoutParams(new ViewGroup.LayoutParams(ContextUtils.dipToPx(width.get(), owner), ContextUtils.dipToPx(height.get(), owner)));
+                setLayoutParams(new ViewGroup.LayoutParams(SizeUtils.dipToPx(width.get(), owner), SizeUtils.dipToPx(height.get(), owner)));
             }
         };
-        ChangeListener<Integer> strokeListener = (ov, nv) -> background.setStroke(ContextUtils.dipToPx(strokeWidth.get(), owner), stroke.get());
+        ChangeListener<Integer> strokeListener = (ov, nv) -> background.setStroke(SizeUtils.dipToPx(strokeWidth.get(), owner), stroke.get());
 
         width.addListener(sizeListener);
         height.addListener(sizeListener);
-        radius.addListener((ov, nv) -> background.setCornerRadius(ContextUtils.dipToPx(nv, owner)));
+        radius.addListener((ov, nv) -> background.setCornerRadius(SizeUtils.dipToPx(nv, owner)));
         strokeWidth.addListener(strokeListener);
 
         fill.addListener((ov, nv) -> background.setColor(nv));

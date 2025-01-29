@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 
-import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.animation.base.Animation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.controls.shape.Rectangle;
@@ -14,8 +13,10 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class Radio extends StackPane implements Styleable {
     private final GradientDrawable background;
@@ -29,7 +30,7 @@ public class Radio extends StackPane implements Styleable {
 
         background = new GradientDrawable();
         background.setColor(Color.TRANSPARENT);
-        background.setCornerRadius(ContextUtils.dipToPx(5, owner));
+        background.setCornerRadius(SizeUtils.dipToPx(5, owner));
 
         setBackground(background);
 
@@ -43,9 +44,9 @@ public class Radio extends StackPane implements Styleable {
 
         setSize(20);
 
-        ContextUtils.alignInFrame(checkMark, Alignment.CENTER);
+        AlignUtils.alignInFrame(checkMark, Alignment.CENTER);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     private Animation showCheck = null;
@@ -76,7 +77,7 @@ public class Radio extends StackPane implements Styleable {
             hideCheck.stop();
             hideCheck.start();
         }
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     public boolean isChecked() {
@@ -89,7 +90,7 @@ public class Radio extends StackPane implements Styleable {
 
     public void setSize(float size) {
         this.size = size;
-        int sizePx = ContextUtils.dipToPx(size, owner);
+        int sizePx = SizeUtils.dipToPx(size, owner);
 
         ViewGroup.LayoutParams old = getLayoutParams();
         if(old == null) {
@@ -97,7 +98,7 @@ public class Radio extends StackPane implements Styleable {
         }else {
             old.width = sizePx;
             old.height = sizePx;
-            requestLayout();
+            setLayoutParams(old);
         }
 
         background.setCornerRadius(size * 2);
@@ -105,18 +106,14 @@ public class Radio extends StackPane implements Styleable {
         checkMark.setSize(s, s);
         checkMark.setRadius(s);
 
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     @Override
     public void applyStyle(Style style) {
-        background.setStroke(ContextUtils.dipToPx(size / 10, owner), style.getTextSecondary());
+        background.setStroke(SizeUtils.dipToPx(size / 10, owner), style.getTextSecondary());
         background.setColor(Color.TRANSPARENT);
         checkMark.setFill(style.getTextSecondary());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

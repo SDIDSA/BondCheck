@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.widget.LinearLayout;
 
 import com.sdidsa.bondcheck.R;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.controls.audio.AudioProxy;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
@@ -24,9 +25,13 @@ import com.sdidsa.bondcheck.abs.components.layout.abs.CornerUtils;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.Item;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.ItemDetailsOverlay;
 import com.sdidsa.bondcheck.app.app_content.session.content.item_display.ItemOverlay;
@@ -56,6 +61,14 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
         }
 
         return found;
+    }
+
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(RecordOverlay::clearCache);
     }
 
     private RecordResponse record;
@@ -105,17 +118,17 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
         play.setRadiusNoClip(64);
         play.setImagePadding(15);
         play.setAutoMirror(true);
-        play.setElevation(ContextUtils.dipToPx(7, owner));
+        play.setElevation(SizeUtils.dipToPx(7, owner));
 
         speed = new ColoredLabel(owner, Style.BACK_PRI, Style.TEXT_SEC, "x1.0");
         speed.setLayoutParams(new LinearLayout.LayoutParams(
-                ContextUtils.dipToPx(57, owner),
+                SizeUtils.dipToPx(57, owner),
                 LayoutParams.WRAP_CONTENT
         ));
-        speed.setTranslationX(ContextUtils.dipToPx(54, owner));
+        speed.setTranslationX(SizeUtils.dipToPx(54, owner));
         speed.setFont(new Font(16, FontWeight.BOLD));
         speed.centerText();
-        ContextUtils.setPaddingHorizontalVertical(speed, 0, 7, owner);
+        PaddingUtils.setPaddingHorizontalVertical(speed, 0, 7, owner);
         speed.setCornerRadius(CornerUtils.cornerRightRadius(owner, 30));
 
         speed.setOnClickListener((e) -> {
@@ -142,14 +155,14 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
         times.addAligned(current, Alignment.BOTTOM_LEFT);
         times.addAligned(total, Alignment.BOTTOM_RIGHT);
 
-        times.setTranslationY(-ContextUtils.dipToPx(40, owner));
+        times.setTranslationY(-SizeUtils.dipToPx(40, owner));
 
         controls.addCentered(play);
         controls.addCentered(speed);
 
         progress = new PlayerProgress(owner);
         progress.addCentered(times);
-        ContextUtils.setMarginBottom(progress, owner, 30);
+        MarginUtils.setMarginBottom(progress, owner, 30);
 
         progress.setOnStartSeeking(() -> {
             wasPlaying = false;
@@ -196,8 +209,8 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
         root.addView(controls);
         root.addView(progress);
 
-        ContextUtils.spacer(root, Orientation.VERTICAL);
-        ContextUtils.setMarginTop(loader, owner, 64);
+        SpacerUtils.spacer(root, Orientation.VERTICAL);
+        MarginUtils.setMarginTop(loader, owner, 64);
 
         list.addView(header);
         list.addView(root);
@@ -207,6 +220,8 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
     @SuppressLint("SetTextI18n")
     private void load(RecordResponse record) {
         this.record = record;
+        header.setUser(record.provider());
+        header.setTitle("");
         playing = false;
         progress.setProgress(0);
         play.setImageResource(R.drawable.play);
@@ -214,7 +229,8 @@ public class RecordOverlay extends PartialSlideOverlay implements ItemOverlay {
         AudioProxy.getAudio(owner, record.asset_id(), file -> {
             this.file = file.file();
             int seconds = (int) ((file.duration() + 500) / 1000);
-            header.setTitle("duration_seconds", Integer.toString(seconds));
+            header.setTitle("duration_seconds" + (seconds <= 10 ? "_sub_10" : ""),
+                    Integer.toString(seconds));
             Platform.runBack(() -> {
                 try {
                     mediaPlayer = new MediaPlayer();

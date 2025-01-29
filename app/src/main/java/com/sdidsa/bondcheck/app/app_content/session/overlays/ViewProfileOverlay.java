@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.LinearLayout;
 
 import com.sdidsa.bondcheck.R;
+import com.sdidsa.bondcheck.abs.UiCache;
 import com.sdidsa.bondcheck.abs.components.controls.image.ImageProxy;
 import com.sdidsa.bondcheck.abs.components.controls.image.NetImage;
 import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
@@ -21,8 +22,11 @@ import com.sdidsa.bondcheck.abs.components.layout.overlay.PartialSlideOverlay;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.AlignUtils;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.BondState;
 import com.sdidsa.bondcheck.app.app_content.session.content.main.bond.ProfileBondState;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
@@ -54,6 +58,14 @@ public class ViewProfileOverlay extends PartialSlideOverlay {
         return found;
     }
 
+    public static void clearCache() {
+        cache.clear();
+    }
+
+    static {
+        UiCache.register(ViewProfileOverlay::clearCache);
+    }
+
     private final NetImage avatar;
     private final Label username;
     private final UserInfo bio;
@@ -71,24 +83,24 @@ public class ViewProfileOverlay extends PartialSlideOverlay {
 
         ColoredStackPane topBack = new ColoredStackPane(owner, Style.BACK_TER);
         topBack.setCornerRadiusTop(20);
-        topBack.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, ContextUtils.dipToPx(180, owner)));
+        topBack.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, SizeUtils.dipToPx(180, owner)));
 
         ColoredStackPane avatarBack = new ColoredStackPane(owner, Style.BACK_PRI);
-        int size = ContextUtils.dipToPx(180, owner);
+        int size = SizeUtils.dipToPx(180, owner);
         avatarBack.setCornerRadius(128);
         avatarBack.setLayoutParams(new LayoutParams(size, size));
-        avatarBack.setY(ContextUtils.dipToPx(40, owner));
+        avatarBack.setY(SizeUtils.dipToPx(40, owner));
 
         root.addView(topBack);
         root.addView(avatarBack);
-        ContextUtils.alignInFrame(avatarBack, Alignment.TOP_CENTER);
+        AlignUtils.alignInFrame(avatarBack, Alignment.TOP_CENTER);
 
         avatar = new NetImage(owner, Style.BACK_TER);
         avatar.setCornerRadius(160);
         avatar.setSize(160);
-        avatar.setY(ContextUtils.dipToPx(50, owner));
+        avatar.setY(SizeUtils.dipToPx(50, owner));
         root.addView(avatar);
-        ContextUtils.alignInFrame(avatar, Alignment.TOP_CENTER);
+        AlignUtils.alignInFrame(avatar, Alignment.TOP_CENTER);
 
         VBox ui = new VBox(owner);
         ui.setPadding(15);
@@ -102,11 +114,11 @@ public class ViewProfileOverlay extends PartialSlideOverlay {
         bio = new UserInfo(owner, "user_bio");
         gender = new UserInfo(owner, "user_gender", true);
 
-        ContextUtils.spacer(gender, Orientation.VERTICAL);
+        SpacerUtils.spacer(gender, Orientation.VERTICAL);
 
         bondState = new ProfileBondState(owner);
 
-        ContextUtils.setMarginTop(username, owner, 220);
+        MarginUtils.setMarginTop(username, owner, 220);
 
         ui.addView(username);
         ui.addView(bio);
@@ -239,7 +251,7 @@ public class ViewProfileOverlay extends PartialSlideOverlay {
             VBox labels = new VBox(owner);
             labels.addViews(title, value);
             labels.setSpacing(5);
-            ContextUtils.spacer(labels);
+            SpacerUtils.spacer(labels);
             addViews(labels);
         }
 

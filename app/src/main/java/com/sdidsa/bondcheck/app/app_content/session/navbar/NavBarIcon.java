@@ -10,10 +10,10 @@ import com.sdidsa.bondcheck.abs.animation.combine.ParallelAnimation;
 import com.sdidsa.bondcheck.abs.animation.easing.Interpolator;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColorIcon;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
-import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class NavBarIcon extends StackPane implements Styleable {
     private final ColorIcon fill;
@@ -24,7 +24,7 @@ public class NavBarIcon extends StackPane implements Styleable {
     }
 
     public NavBarIcon(Context owner, @DrawableRes int fillRes, @DrawableRes int outlineRes,
-                      int size) {
+                      float size) {
         super(owner);
 
         fill = new ColorIcon(owner, fillRes, size);
@@ -42,7 +42,7 @@ public class NavBarIcon extends StackPane implements Styleable {
 
         setSize(size);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -83,13 +83,13 @@ public class NavBarIcon extends StackPane implements Styleable {
     }
 
     public void setHeight(float height) {
-        getLayoutParams().height = Math.max(ContextUtils.dipToPx(height, owner), 0);
-        requestLayout();
+        getLayoutParams().height = Math.max(SizeUtils.dipToPx(height, owner), 0);
+        setLayoutParams(getLayoutParams());
     }
 
     public void setWidth(float width) {
-        getLayoutParams().width = Math.max(0, ContextUtils.dipToPx(width, owner));
-        requestLayout();
+        getLayoutParams().width = Math.max(0, SizeUtils.dipToPx(width, owner));
+        setLayoutParams(getLayoutParams());
     }
 
     public void setSize(float size) {
@@ -103,8 +103,4 @@ public class NavBarIcon extends StackPane implements Styleable {
         outline.setFill(style.getTextSecondary());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

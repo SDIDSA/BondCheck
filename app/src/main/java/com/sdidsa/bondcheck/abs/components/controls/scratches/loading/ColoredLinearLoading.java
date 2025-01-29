@@ -5,8 +5,8 @@ import android.content.Context;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredLinearLoading extends LinearLoading implements Styleable {
     private final StyleToColor fill;
@@ -19,7 +19,7 @@ public class ColoredLinearLoading extends LinearLoading implements Styleable {
         super(owner, size);
         this.fill = fill;
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     @Override
@@ -27,8 +27,4 @@ public class ColoredLinearLoading extends LinearLoading implements Styleable {
         setFill(fill.get(style));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

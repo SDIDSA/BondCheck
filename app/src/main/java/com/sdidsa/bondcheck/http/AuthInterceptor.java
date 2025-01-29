@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
@@ -62,9 +62,10 @@ public class AuthInterceptor implements Interceptor {
             return new Response.Builder()
                     .code(500)
                     .request(newRequest)
-                    .protocol(Protocol.HTTP_1_1)
+                    .protocol(Protocol.HTTP_2)
                     .message("can't get to the server")
-                    .body(ResponseBody.create(MediaType.get("application/json"), "{'error': 'can't get to the server'}"))
+                    .body(ResponseBody.create(MediaType.get("application/json"),
+                            "{'error': 'can't get to the server'}"))
                     .build();
         }
     }

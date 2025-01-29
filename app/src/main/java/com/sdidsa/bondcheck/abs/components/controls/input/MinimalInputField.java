@@ -3,6 +3,7 @@ package com.sdidsa.bondcheck.abs.components.controls.input;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
@@ -17,10 +19,15 @@ import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.locale.Localized;
 import com.sdidsa.bondcheck.abs.style.Style;
+import com.sdidsa.bondcheck.abs.style.StyleToColor;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.observable.Observable;
 import com.sdidsa.bondcheck.abs.data.property.Property;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class MinimalInputField extends StackPane implements Styleable, Localized {
     protected final EditText input;
@@ -29,6 +36,9 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
     private final HBox preInput;
 
     private final String promptKey;
+
+    private StyleToColor backFill = Style.BACK_SEC;
+    private StyleToColor textFill = Style.TEXT_NORM;
 
     public MinimalInputField(Context owner) {
         this(owner,"Input Prompt");
@@ -46,6 +56,7 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         params.weight = 1;
+        setFocusable(true);
 
         input = new EditText(owner);
         input.setLayoutParams(params);
@@ -60,7 +71,13 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
         preInput = new HBox(owner);
         preInput.setAlignment(Alignment.TOP_LEFT);
         preInput.addView(input);
-        ContextUtils.setPadding(preInput, 15, 5, 4, 4, owner);
+        PaddingUtils.setPadding(preInput, 15, 5, 4, 4, owner);
+
+        preInput.setFocusable(true);
+        preInput.setOnClickListener(e -> {
+            input.requestFocus();
+            ContextUtils.showKeyboard(owner, input);
+        });
 
         addView(preInput);
 
@@ -68,8 +85,12 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
 
         setBackground(background);
 
-        applyStyle(ContextUtils.getStyle(owner));
-        applyLocale(ContextUtils.getLocale(owner));
+        applyStyle(StyleUtils.getStyle(owner));
+        applyLocale(LocaleUtils.getLocale(owner));
+    }
+
+    public void setLineSpacing(float spacing) {
+        input.setLineSpacing(SizeUtils.dipToPx(spacing, owner), 1);
     }
 
     public EditText getInput() {
@@ -77,7 +98,7 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
     }
 
     public void setMultiline(int lines) {
-        input.setMaxLines(lines);
+        input.setMaxLines(lines == -1 ? Integer.MAX_VALUE : lines);
         input.setSingleLine(lines == 1);
     }
 
@@ -104,7 +125,7 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
     }
 
     public void setRadius(float radius) {
-        background.setCornerRadius(ContextUtils.dipToPx(radius, owner));
+        background.setCornerRadius(SizeUtils.dipToPx(radius, owner));
     }
 
     public void setBackgroundColor(int color) {
@@ -116,16 +137,22 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
         setBackgroundColor(color);
     }
 
-    @Override
-    public void applyStyle(Style style) {
-        setBackgroundColor(style.getBackgroundSecondary());
+    public void setBackFill(StyleToColor backFill) {
+        this.backFill = backFill;
+        applyStyle(StyleUtils.getStyle(owner).get());
+    }
 
-        input.setTextColor(style.getTextNormal());
+    public void setTextFill(StyleToColor textFill) {
+        this.textFill = textFill;
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
+    public void applyStyle(Style style) {
+        setBackgroundColor(backFill.get(style));
+        int tf = textFill.get(style);
+        input.setTextColor(tf);
+        input.setHintTextColor(App.adjustAlpha(tf, .5f));
     }
 
     @SuppressLint("RtlHardcoded")
@@ -136,8 +163,9 @@ public class MinimalInputField extends StackPane implements Styleable, Localized
         input.setGravity(Gravity.CENTER_VERTICAL | (locale.isRtl() ? Gravity.RIGHT : Gravity.LEFT));
     }
 
-    @Override
-    public void applyLocale(Property<Locale> locale) {
-        Localized.bindLocale(this, locale);
+    private int type;
+    public void setEditable(boolean b) {
+        if(!b) type = input.getInputType();
+        input.setInputType(b ? type : InputType.TYPE_NULL);
     }
 }

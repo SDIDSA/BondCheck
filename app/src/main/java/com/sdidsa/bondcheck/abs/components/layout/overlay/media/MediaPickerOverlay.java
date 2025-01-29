@@ -17,7 +17,6 @@ import com.sdidsa.bondcheck.abs.components.controls.button.Button;
 import com.sdidsa.bondcheck.abs.components.controls.button.ColoredButton;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColorIcon;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
-import com.sdidsa.bondcheck.abs.components.controls.scratches.Orientation;
 import com.sdidsa.bondcheck.abs.components.controls.text.ColoredLabel;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
@@ -28,11 +27,14 @@ import com.sdidsa.bondcheck.abs.components.layout.overlay.media.medialist.MediaL
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PermissionUtils;
 import com.sdidsa.bondcheck.abs.utils.Permissions;
 import com.sdidsa.bondcheck.abs.utils.Platform;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.data.media.Bucket;
 import com.sdidsa.bondcheck.abs.data.media.Media;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public class MediaPickerOverlay extends PartialSlideOverlay {
         done.setFont(new Font(18, FontWeight.MEDIUM));
         selectedMedia.addListener((ov, nv) -> done.setDisabled(nv == null));
 
-        ContextUtils.setMargin(done, owner, 10, 10, 10, 10);
+        MarginUtils.setMargin(done, owner, 10, 10, 10, 10);
 
         ColorIcon arrow = new ColoredIcon(owner, Style.TEXT_NORM, R.drawable.right_arrow);
         arrow.setRotation(-90);
@@ -70,7 +72,7 @@ public class MediaPickerOverlay extends PartialSlideOverlay {
         top = new HBox(owner);
         top.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         top.setGravity(Gravity.TOP);
-        ContextUtils.setMargin(top, owner, 10, 10, 10, 10);
+        MarginUtils.setMargin(top, owner, 10, 10, 10, 10);
 
         bucketOverlay = new BucketOverlay(owner);
 
@@ -100,24 +102,24 @@ public class MediaPickerOverlay extends PartialSlideOverlay {
 
         bucket.addPostLabel(arrow);
 
-        ContextUtils.spacerWidth(bucket, 1f);
+        SpacerUtils.spacerWidth(bucket, 1f);
 
         top.addView(bucket);
 
         select = new ColoredButton(owner, Style.BACK_SEC,
                 Style.TEXT_NORM, "Select Images");
         select.setElevation(0);
-        ContextUtils.spacer(bucket);
-        ContextUtils.spacer(select);
-        ContextUtils.setMarginLeft(select, owner, 10);
+        SpacerUtils.spacer(bucket);
+        SpacerUtils.spacer(select);
+        MarginUtils.setMarginLeft(select, owner, 10);
 
         select.setOnClick(() ->
-                ContextUtils.requestPermissionsOr(owner, this::readImages,
+                PermissionUtils.requestPermissionsOr(owner, this::readImages,
                     Permissions.imagePermissions()));
 
         addOnShowing(() -> {
             if(accessMode() == AccessMode.DENIED) {
-                ContextUtils.requirePermissionsOr(owner,
+                PermissionUtils.requirePermissionsOr(owner,
                         this::readImages, Permissions.imagePermissions());
             }else {
                 if(accessMode() != AccessMode.DENIED)
@@ -130,13 +132,13 @@ public class MediaPickerOverlay extends PartialSlideOverlay {
         params.weight = 1;
         mediaList.setLayoutParams(params);
 
-        ContextUtils.setMargin(mediaList, owner, 10, 0, 10, 0);
+        MarginUtils.setMargin(mediaList, owner, 10, 0, 10, 0);
 
         ColoredLabel empty = new ColoredLabel(owner,
                 Style.TEXT_SEC, "We couldn't find any images here");
         empty.setFont(new Font(18));
         empty.centerText();
-        ContextUtils.setMarginTop(empty, owner, 20);
+        MarginUtils.setMarginTop(empty, owner, 20);
 
         mediaList.setOnData(data -> {
             list.removeView(empty);
@@ -201,15 +203,15 @@ public class MediaPickerOverlay extends PartialSlideOverlay {
         boolean hasSelective = false;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            hasSelective = ContextUtils.isGranted(owner,
+            hasSelective = PermissionUtils.isGranted(owner,
                     Permissions.selectiveImagePermission());
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            hasAll = ContextUtils.isGranted(owner,
+            hasAll = PermissionUtils.isGranted(owner,
                     Permissions.allImagesPermission());
         }else {
-            hasAll = ContextUtils.isGranted(owner,
+            hasAll = PermissionUtils.isGranted(owner,
                     Permissions.externalStoragePermission());
         }
 

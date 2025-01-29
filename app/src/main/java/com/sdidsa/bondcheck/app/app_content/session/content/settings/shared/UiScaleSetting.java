@@ -8,7 +8,7 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.transformationMethods.Capitalize;
 import com.sdidsa.bondcheck.abs.components.layout.overlay.OverlayOption;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.display.UiScaleOverlay;
 
 import java.util.function.Consumer;
@@ -38,7 +38,7 @@ public class UiScaleSetting extends Setting {
 
         ColoredLabel value = new ColoredLabel(owner, Style.TEXT_NORM, get.get().toLowerCase());
         value.setTransformationMethod(new Capitalize());
-        addPostLabel(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        addPostLabel(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         addPostLabel(value);
 
         value.setFont(new Font(16));

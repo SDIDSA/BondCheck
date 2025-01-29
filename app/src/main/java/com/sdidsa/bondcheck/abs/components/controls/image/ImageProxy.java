@@ -1,10 +1,13 @@
 package com.sdidsa.bondcheck.abs.components.controls.image;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -14,6 +17,7 @@ import android.util.Size;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.models.requests.AssetRequest;
 
 import java.io.File;
@@ -47,7 +51,10 @@ public class ImageProxy {
     private static DiskImageCache diskCache;
 
     public static void init(App owner) {
-        diskCache = new DiskImageCache(owner, "bitmaps", Bitmap.CompressFormat.PNG, 80);
+        diskCache = new DiskImageCache(owner,
+                "bitmaps",
+                Bitmap.CompressFormat.JPEG,
+                80);
     }
 
     private static String makeKey(String url) {
@@ -101,6 +108,49 @@ public class ImageProxy {
                     ErrorHandler.handle(x, "downloading image at " + url);
                 }
 
+                if(downloadedBitmap != null) {
+                    Bitmap finalBitmap = downloadedBitmap;
+                    Platform.runLater(() -> {
+                        waiters.remove(key);
+                        forThis.forEach(w -> w.accept(finalBitmap));
+                    });
+                }
+            });
+        });
+    }
+
+    public synchronized static void getImage(Context owner, Uri uri, Consumer<Bitmap> onResult) {
+        String url = uri.toString();
+        String key = makeKey(url);
+
+        if(waiters.containsKey(key)) {
+            Objects.requireNonNull(waiters.get(key)).add(onResult);
+            return;
+        }
+
+        List<Consumer<Bitmap>> forThis = new ArrayList<>();
+        forThis.add(onResult);
+        waiters.put(key, forThis);
+
+        Platform.runBack(() -> {
+            Bitmap cachedBitmap = get(key);
+            if (cachedBitmap != null) {
+                waiters.remove(key);
+                Platform.runLater(() -> forThis.forEach(w -> w.accept(cachedBitmap)));
+                return;
+            }
+
+            Platform.runBack(() -> {
+                Bitmap downloadedBitmap = null;
+                try {
+                    downloadedBitmap = decode(owner, uri);
+                    if (downloadedBitmap != null) {
+                        put(key, downloadedBitmap);
+                    }
+                } catch (Exception x) {
+                    ErrorHandler.handle(x, "downloading image at " + url);
+                }
+
                 Bitmap finalBitmap = downloadedBitmap;
                 Platform.runLater(() -> {
                     waiters.remove(key);
@@ -117,6 +167,22 @@ public class ImageProxy {
                     Bitmap found = get(key);
                     if (found == null) {
                         found = generateThumbnail(bmp, size);
+                        put(key, found);
+                    }
+                    Bitmap finalFound = found;
+                    Platform.runLater(() -> onResult.accept(finalFound));
+                })
+        );
+    }
+
+    public static void getImageThumb(Context owner, String url, int width, int height,
+                                     Consumer<Bitmap> onResult) {
+        getImage(owner, url, bmp ->
+                Platform.runBack(() -> {
+                    String key = makeKey(url) + "_thumb_" + width + "_" + height;
+                    Bitmap found = get(key);
+                    if (found == null) {
+                        found = generateThumbnail(bmp, width, height);
                         put(key, found);
                     }
                     Bitmap finalFound = found;
@@ -175,15 +241,46 @@ public class ImageProxy {
     }
 
     private static Bitmap generateThumbnail(Bitmap bmp, int size){
+        Bitmap res;
         int bmpw = bmp.getWidth();
         int bmph = bmp.getHeight();
-        if (bmpw == bmph) return bmp;
-        boolean hor = bmpw > bmph;
-        int ds = hor ? bmph : bmpw;
-        int sx = hor ? (bmpw - ds) / 2 : 0;
-        int sy = hor ? 0 : (bmph - ds) / 2;
-        return Bitmap.createScaledBitmap(Bitmap.createBitmap(bmp, sx, sy, ds, ds),
-                size, size, true);
+        if (bmpw == bmph) {
+            res = scale(bmp, size, size);
+        } else {
+            boolean hor = bmpw > bmph;
+            int ds = hor ? bmph : bmpw;
+            int sx = hor ? (bmpw - ds) / 2 : 0;
+            int sy = hor ? 0 : (bmph - ds) / 2;
+            res = scale(Bitmap.createBitmap(bmp, sx, sy, ds, ds),
+                    size, size);
+        }
+        return res;
+    }
+
+    private static Bitmap generateThumbnail(Bitmap bmp, int targetWidth, int targetHeight) {
+        int bmpw = bmp.getWidth();
+        int bmph = bmp.getHeight();
+
+        float sourceRatio = (float) bmpw / bmph;
+        float targetRatio = (float) targetWidth / targetHeight;
+
+        int sx, sy, cropWidth, cropHeight;
+
+        if (sourceRatio > targetRatio) {
+            cropHeight = bmph;
+            cropWidth = Math.round(bmph * targetRatio);
+            sx = (bmpw - cropWidth) / 2;
+            sy = 0;
+        } else {
+            cropWidth = bmpw;
+            cropHeight = Math.round(bmpw / targetRatio);
+            sx = 0;
+            sy = (bmph - cropHeight) / 2;
+        }
+
+        return scale(
+                Bitmap.createBitmap(bmp, sx, sy, cropWidth, cropHeight),
+                targetWidth, targetHeight);
     }
 
     private static Bitmap get(String key) {
@@ -205,6 +302,22 @@ public class ImageProxy {
         if (!diskCache.exists(key)) {
             diskCache.put(key, bitmap);
         }
+    }
+
+    public static Bitmap decode(Context owner, Uri uri) {
+        ContentResolver resolver = owner.getContentResolver();
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = resolver.query(uri, projection, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            String imagePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            return BitmapFactory.decodeFile(imagePath);
+        }
+        return null;
     }
 
     private static Bitmap download(Context owner, String url) {
@@ -250,7 +363,11 @@ public class ImageProxy {
         return diskCache.put("temp_" + System.currentTimeMillis(), bmp);
     }
 
-    public static int saveImageToGallery(Context context, Bitmap bitmap, String fileName) {
+    public static int saveImageToGallery(Context context, Bitmap bitmap, String name) {
+        String appName = ContextUtils.getAppName(context).toLowerCase();
+
+        String fileName = appName + "_" + name + ".jpg";
+
         if(isFileInGallery(context, fileName)) {
             return FILE_EXISTS;
         }
@@ -268,7 +385,7 @@ public class ImageProxy {
             if(uri == null) throw new IllegalStateException("failed to open input stream");
             OutputStream fos = contentResolver.openOutputStream(uri);
             if(fos == null) throw new IllegalStateException("failed to open input stream");
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmap.compress(diskCache.getmCompressFormat(), diskCache.getmCompressQuality(), fos);
             fos.close();
 
             values.put(MediaStore.Images.Media.IS_PENDING, false);
@@ -298,5 +415,25 @@ public class ImageProxy {
             }
         }
         return false;
+    }
+
+    public static Bitmap scale(Bitmap source, int width, int height) {
+        Bitmap scaledBitmap = Bitmap.createBitmap(width, height, source.getConfig());
+
+        Canvas canvas = new Canvas(scaledBitmap);
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+
+        float scaleX = (float) width / source.getWidth();
+        float scaleY = (float) height / source.getHeight();
+
+        canvas.scale(scaleX, scaleY);
+
+        canvas.drawBitmap(source, 0, 0, paint);
+
+        return scaledBitmap;
     }
 }

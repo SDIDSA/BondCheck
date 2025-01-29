@@ -5,8 +5,8 @@ import android.content.Context;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredSpinLoading extends SpinLoading implements Styleable {
     private final StyleToColor fill;
@@ -18,7 +18,7 @@ public class ColoredSpinLoading extends SpinLoading implements Styleable {
     public ColoredSpinLoading(Context owner, StyleToColor fill) {
         super(owner);
         this.fill = fill;
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public ColoredSpinLoading(Context owner, StyleToColor fill, float size) {
@@ -31,8 +31,4 @@ public class ColoredSpinLoading extends SpinLoading implements Styleable {
         setFill(fill.get(style));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

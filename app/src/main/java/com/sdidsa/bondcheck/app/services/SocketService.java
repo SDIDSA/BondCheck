@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -19,10 +20,10 @@ import androidx.core.graphics.drawable.IconCompat;
 import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.App;
 import com.sdidsa.bondcheck.abs.locale.Locale;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.ErrorHandler;
 import com.sdidsa.bondcheck.abs.utils.Platform;
 import com.sdidsa.bondcheck.abs.utils.Store;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
 import com.sdidsa.bondcheck.app.BondCheck;
 import com.sdidsa.bondcheck.http.Socket;
 import com.sdidsa.bondcheck.http.services.Notifier;
@@ -62,6 +63,8 @@ public class SocketService extends Service {
                 getSystemService(NOTIFICATION_SERVICE);
 
         Store.init(this);
+
+        paused = Store.isPauseSharing();
 
         socket = new Socket();
         socket.connect();
@@ -145,10 +148,10 @@ public class SocketService extends Service {
             }
         });
 
-        listener = Action.broadcastListener(this);
+        listener = new BroadcastListener(this);
 
         listener.on(Action.LOCALE_CHANGED, () -> {
-            ContextUtils.localeChanged(this);
+            LocaleUtils.localeChanged(this);
             manager.notify(ID, createNotification());
         });
 
@@ -175,13 +178,22 @@ public class SocketService extends Service {
             if(intent != null && intent.getAction() != null) {
                 switch (intent.getAction()) {
                     case ACTION_PAUSE_SERVICE -> {
+                        if(paused) return;
                         paused = true;
-                        manager.notify(ID, createNotification());
 
                         sendBroadcast(App.broadcast(Action.STOP_SCREEN_SHARING));
+                        sendBroadcast(App.broadcast(Action.PAUSE_SHARING));
+                        Store.setPauseSharing(true, null);
+
+                        manager.notify(ID, createNotification());
                     }
                     case ACTION_RESUME_SERVICE -> {
+                        if(!paused) return;
                         paused = false;
+
+                        sendBroadcast(App.broadcast(Action.RESUME_SHARING));
+                        Store.setPauseSharing(false, null);
+
                         manager.notify(ID, createNotification());
                     }
                     default ->
@@ -221,8 +233,17 @@ public class SocketService extends Service {
         return paused ? ACTION_RESUME_SERVICE : ACTION_PAUSE_SERVICE;
     }
 
+    public static void setPaused(Context context, boolean paused) {
+        String action = paused ? ACTION_RESUME_SERVICE : ACTION_PAUSE_SERVICE;
+        try {
+            actionIntent(context, action).send();
+        } catch (PendingIntent.CanceledException e) {
+            ErrorHandler.handle(e, "set pause state to " + paused);
+        }
+    }
+
     private Notification createNotification() {
-        Locale locale = ContextUtils.getLocale(this).get();
+        Locale locale = LocaleUtils.getLocale(this).get();
         NotificationCompat.Action action = new NotificationCompat.Action.Builder(
                 IconCompat.createWithResource(this, R.drawable.empty),
                 locale.get(getActionText()),
@@ -240,11 +261,15 @@ public class SocketService extends Service {
     }
 
     private PendingIntent actionIntent(String action) {
-        Intent intent = new Intent(this, getClass());
+        return actionIntent(this, action);
+    }
+
+    private static PendingIntent actionIntent(Context context, String action) {
+        Intent intent = new Intent(context, SocketService.class);
         intent.setAction(action);
 
         return PendingIntent.getService(
-                this,
+                context,
                 0,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE

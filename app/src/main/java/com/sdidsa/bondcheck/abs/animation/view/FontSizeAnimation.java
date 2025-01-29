@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.sdidsa.bondcheck.abs.animation.base.ViewAnimation;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class FontSizeAnimation extends ViewAnimation {
 
@@ -19,11 +19,11 @@ public class FontSizeAnimation extends ViewAnimation {
 
     @Override
     protected void apply(View view, float v) {
-        this.view.setTextSize(COMPLEX_UNIT_PX , ContextUtils.spToPx(v, view.getContext()));
+        this.view.setTextSize(COMPLEX_UNIT_PX , SizeUtils.spToPx(v, view.getContext()));
     }
 
     @Override
     protected float getFrom(View view) {
-        return ContextUtils.pxToSp(this.view.getTextSize(), view.getContext());
+        return SizeUtils.pxToSp(this.view.getTextSize(), view.getContext());
     }
 }

@@ -6,7 +6,9 @@ import com.sdidsa.bondcheck.R;
 import com.sdidsa.bondcheck.abs.components.controls.image.ColoredIcon;
 import com.sdidsa.bondcheck.abs.locale.Locale;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.LocaleUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 
 public class MapButton extends ColoredIcon {
     private int horizontal = 0, vertical = 0;
@@ -20,24 +22,24 @@ public class MapButton extends ColoredIcon {
                 Style.BACK_PRI, id, 42);
         setPadding(10);
         setCornerRadius(10);
-        setElevation(ContextUtils.dipToPx(10, owner));
+        setElevation(SizeUtils.dipToPx(10, owner));
         setLayoutParams(new LayoutParams(-2, -2));
         setSize(42);
 
-        applyLocale(ContextUtils.getLocale(owner));
+        applyLocale(LocaleUtils.getLocale(owner));
     }
 
     public void setOffset(int vertical, int horizontal) {
         this.horizontal = horizontal;
         this.vertical = vertical;
 
-        applyLocale(ContextUtils.getLocale(owner).get());
+        applyLocale(LocaleUtils.getLocale(owner).get());
     }
 
     @Override
     public void applyLocale(Locale locale) {
         super.applyLocale(locale);
-        ContextUtils.setMarginTopRight(this, owner,
+        MarginUtils.setMarginTopRight(this, owner,
                 (52 * vertical) + 10,
                 (52 * horizontal) + 10);
     }

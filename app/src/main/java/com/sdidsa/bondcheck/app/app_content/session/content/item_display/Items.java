@@ -21,8 +21,11 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.StackPane;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.PaddingUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
 import com.sdidsa.bondcheck.app.app_content.session.Home;
 import com.sdidsa.bondcheck.app.app_content.session.content.HomePage;
 import com.sdidsa.bondcheck.app.app_content.session.content.history.History;
@@ -49,7 +52,7 @@ public abstract class Items extends HomePage {
 
         items = new VBox(owner);
         items.setSpacing(15);
-        ContextUtils.setPadding(items, 15, 0, 15, 15, owner);
+        PaddingUtils.setPadding(items, 15, 0, 15, 15, owner);
 
         refresh = new Refresh(owner);
         refresh.setOnClick(this::fetch);
@@ -58,7 +61,7 @@ public abstract class Items extends HomePage {
         back.setPadding(12);
         back.setAutoMirror(true);
         back.setContentDescription("Go Back to history page");
-        ContextUtils.setMarginRight(back, owner, 15);
+        MarginUtils.setMarginRight(back, owner, 15);
         back.setOnClick(() -> {
             Home home = Page.getInstance(owner, Home.class);
             home.previousInto(History.class, null);
@@ -72,7 +75,7 @@ public abstract class Items extends HomePage {
         preItems = new StackPane(owner);
         preItems.addView(items);
         preItems.setClipChildren(false);
-        ContextUtils.setMarginTop(loader, owner, 128);
+        MarginUtils.setMarginTop(loader, owner, 128);
 
         request = new ColoredButton(owner, Style.BACK_SEC, Style.TEXT_NORM,
                 requestText);
@@ -81,14 +84,14 @@ public abstract class Items extends HomePage {
         request.setPadding(20);
         request.extendLabel();
         request.addPostLabel(new ColoredIcon(owner, Style.TEXT_NORM, requestIcon, 26));
-        ContextUtils.setMarginUnified(request, owner, 15);
+        MarginUtils.setMarginUnified(request, owner, 15);
 
         request.setOnClick(this::requestItem);
 
         content.addViews(preItems);
         root.addView(request);
 
-        scrollable.setOnMaybeRefresh(this::onMaybeRefresh);
+        scrollable.setOnRefreshGesture(this::onMaybeRefresh);
         scrollable.setOnRefresh(this::onRefresh);
 
         fetch();
@@ -172,7 +175,7 @@ public abstract class Items extends HomePage {
     protected Animation dragDown() {
         ParallelAnimation res = new ParallelAnimation(300)
                 .setInterpolator(Interpolator.OVERSHOOT);
-        int spacing = ContextUtils.dipToPx(20, owner);
+        int spacing = SizeUtils.dipToPx(20, owner);
         for (int i = 0; i < items.getChildCount(); i++) {
             if (items.getChildAt(i) instanceof ItemView item) {
                 if(i < 2) {

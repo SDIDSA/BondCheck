@@ -22,11 +22,13 @@ import com.sdidsa.bondcheck.abs.components.controls.text.font.Font;
 import com.sdidsa.bondcheck.abs.components.controls.text.font.FontWeight;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
-import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.utils.Platform;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SizeUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 import com.sdidsa.bondcheck.app.app_content.session.content.settings.Settings;
 
 import java.util.ArrayList;
@@ -60,7 +62,7 @@ public class SettingsGroup extends VBox implements Styleable {
 
         icon = new ColorIcon(owner, iconRes);
         icon.setSize(24);
-        ContextUtils.setMarginRight(icon, owner, 15);
+        MarginUtils.setMarginRight(icon, owner, 15);
 
         title = new Label(owner, key);
         title.setFont(new Font(18, FontWeight.MEDIUM));
@@ -81,16 +83,14 @@ public class SettingsGroup extends VBox implements Styleable {
         top.addView(icon);
         top.addView(title);
         top.setPadding(20);
-        top.addView(ContextUtils.spacer(owner, Orientation.HORIZONTAL));
+        top.addView(SpacerUtils.spacer(owner, Orientation.HORIZONTAL));
         top.addView(arrow);
 
         setOnClickListener(e -> open());
 
         addView(top);
-        addView(settingsBox);
-        settingsBox.setVisibility(GONE);
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     private int settingsHeight() {
@@ -110,7 +110,7 @@ public class SettingsGroup extends VBox implements Styleable {
     }
 
     public void openIfClosed() {
-        if(!isOpen()) {
+        if (!isOpen()) {
             open();
         }
     }
@@ -120,30 +120,31 @@ public class SettingsGroup extends VBox implements Styleable {
     }
 
     private Animation openAnim;
+
     public void open(Runnable prePost) {
         Runnable post = () -> Platform.runLater(() -> {
-            if(prePost != null) prePost.run();
+            if (prePost != null) prePost.run();
             parent.scrollTo(this);
         });
 
         SettingsGroup old;
-        if(parent.getOpen() != null) {
-            if(parent.getOpen() == this) {
+        if (parent.getOpen() != null) {
+            if (parent.getOpen() == this) {
                 close();
                 return;
             } else {
                 old = parent.getOpen();
             }
-        }else {
+        } else {
             old = null;
         }
 
         open = true;
-        if(close != null && close.isRunning()) {
+        if (close != null && close.isRunning()) {
             close.stop();
         }
-        settingsBox.setVisibility(VISIBLE);
-        if(openAnim == null) {
+        Platform.runLater(() -> addView(settingsBox));
+        if (openAnim == null) {
             Platform.waitWhile(() -> !settingsBox.isLaidOut(), () -> {
                 openAnim = new ParallelAnimation(400)
                         .addAnimation(new RotateAnimation(arrow, 270))
@@ -152,16 +153,16 @@ public class SettingsGroup extends VBox implements Styleable {
                         .addAnimation(new AlphaAnimation(top, 1f))
                         .addAnimation(new ScaleXYAnimation(this, 1))
                         .addAnimation(new ElevationAnimation(this,
-                                ContextUtils.dipToPx(20, owner)))
+                                SizeUtils.dipToPx(20, owner)))
                         .setInterpolator(Interpolator.OVERSHOOT);
 
-                if(old != null) old.close();
+                if (old != null) old.close();
                 openAnim.setOnFinished(post);
                 openAnim.start();
                 parent.setOpen(this);
             });
-        }else {
-            if(old != null) old.close();
+        } else {
+            if (old != null) old.close();
             openAnim.setOnFinished(post);
             openAnim.start();
             parent.setOpen(this);
@@ -174,11 +175,12 @@ public class SettingsGroup extends VBox implements Styleable {
     }
 
     private Animation close;
+
     public void close() {
-        if(!open) return;
+        if (!open) return;
         open = false;
 
-        if(close == null) {
+        if (close == null) {
             close = new ParallelAnimation(400)
                     .addAnimation(new RotateAnimation(arrow, 90))
                     .addAnimation(new LinearHeightAnimation(settingsBox, 0))
@@ -186,9 +188,9 @@ public class SettingsGroup extends VBox implements Styleable {
                     .addAnimation(new AlphaAnimation(top, .7f))
                     .addAnimation(new ScaleXYAnimation(this, SCALE_DOWN))
                     .setInterpolator(Interpolator.OVERSHOOT)
-                    .setOnFinished(() -> settingsBox.setVisibility(GONE));
+                    .setOnFinished(() -> removeView(settingsBox));
         }
-        if(openAnim != null && openAnim.isRunning()) {
+        if (openAnim != null && openAnim.isRunning()) {
             openAnim.stop();
         }
         close.start();
@@ -210,8 +212,4 @@ public class SettingsGroup extends VBox implements Styleable {
         setBackground(style.getBackgroundSecondary());
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

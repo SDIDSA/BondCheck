@@ -5,8 +5,8 @@ import android.content.Context;
 import com.sdidsa.bondcheck.abs.data.property.Property;
 import com.sdidsa.bondcheck.abs.style.Style;
 import com.sdidsa.bondcheck.abs.style.Styleable;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
 import com.sdidsa.bondcheck.abs.style.StyleToColor;
+import com.sdidsa.bondcheck.abs.utils.view.StyleUtils;
 
 public class ColoredHBox extends HBox implements Styleable {
     private StyleToColor fill;
@@ -18,12 +18,12 @@ public class ColoredHBox extends HBox implements Styleable {
         super(owner);
         this.fill = fill;
 
-        applyStyle(ContextUtils.getStyle(owner));
+        applyStyle(StyleUtils.getStyle(owner));
     }
 
     public void setFill(StyleToColor fill) {
         this.fill = fill;
-        applyStyle(ContextUtils.getStyle(owner).get());
+        applyStyle(StyleUtils.getStyle(owner).get());
     }
 
     @Override
@@ -31,8 +31,4 @@ public class ColoredHBox extends HBox implements Styleable {
         setBackground(fill.get(style));
     }
 
-    @Override
-    public void applyStyle(Property<Style> style) {
-        Styleable.bindStyle(this, style);
-    }
 }

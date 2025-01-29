@@ -21,7 +21,9 @@ import com.sdidsa.bondcheck.abs.components.layout.Alignment;
 import com.sdidsa.bondcheck.abs.components.layout.linear.HBox;
 import com.sdidsa.bondcheck.abs.components.layout.linear.VBox;
 import com.sdidsa.bondcheck.abs.style.Style;
-import com.sdidsa.bondcheck.abs.utils.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.ContextUtils;
+import com.sdidsa.bondcheck.abs.utils.view.MarginUtils;
+import com.sdidsa.bondcheck.abs.utils.view.SpacerUtils;
 import com.sdidsa.bondcheck.app.app_content.auth.login.Login;
 
 public class Welcome extends Page {
@@ -44,7 +46,7 @@ public class Welcome extends Page {
         ColoredLabel name = new ColoredLabel(owner, Style.ACCENT, "")
                 .setFont(new Font(42, FontWeight.BOLD));
         name.setText(ContextUtils.getAppName(owner));
-        ContextUtils.setMarginRight(heart, owner, 20);
+        MarginUtils.setMarginRight(heart, owner, 20);
         top.addViews(heart, name);
 
         rest = new ColoredLabel(owner, Style.TEXT_NORM, "welcome_header")
@@ -64,7 +66,7 @@ public class Welcome extends Page {
         buttons.setSpacing(10);
         buttons.addViews(login, signup);
 
-        root.addViews(ContextUtils.spacer(owner, Orientation.VERTICAL),top, rest, ContextUtils.spacer(owner, Orientation.VERTICAL), buttons);
+        root.addViews(SpacerUtils.spacer(owner, Orientation.VERTICAL),top, rest, SpacerUtils.spacer(owner, Orientation.VERTICAL), buttons);
 
         addCentered(root);
     }

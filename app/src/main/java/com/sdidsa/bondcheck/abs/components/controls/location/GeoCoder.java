@@ -1,72 +1,81 @@
 package com.sdidsa.bondcheck.abs.components.controls.location;
 
-import androidx.annotation.NonNull;
-
 import com.sdidsa.bondcheck.abs.utils.Platform;
-
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class GeoCoder {
+    private static final String BASE_URL = "https://nominatim.openstreetmap.org/reverse";
+    private static final OkHttpClient httpClient = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .build();
 
-    public static void getAddress(double latitude,
-                                             double longitude,
-                                             OnGeocodeResultListener listener,
-                                             String lang) {
-        new ReverseGeocodeTask(latitude, longitude, listener, lang).execute();
+    public static CompletableFuture<String> getAddress(double latitude, double longitude, String lang) {
+        return CompletableFuture.supplyAsync(() -> {
+            String apiUrl = buildUrl(latitude, longitude, lang);
+            try {
+                JSONObject address = fetchAddress(apiUrl);
+                return formatAddress(address);
+            } catch (Exception e) {
+                throw new GeocodingException("Failed to fetch address", e);
+            }
+        }, Platform::runBack);
     }
 
-    public interface OnGeocodeResultListener {
-        void onGeocodeResult(String address);
-        void onError(Exception error);
+    private static String buildUrl(double latitude, double longitude, String lang) {
+        return String.format(Locale.ROOT,
+                "%s?format=json&lat=%f&lon=%f&zoom=18&addressdetails=1&accept-language=%s",
+                BASE_URL, latitude, longitude, lang);
     }
 
-    private record ReverseGeocodeTask(double latitude, double longitude,
-                                      OnGeocodeResultListener listener,
-                                      String lang) {
+    private static JSONObject fetchAddress(String apiUrl) throws IOException, JSONException {
+        Request request = new Request.Builder()
+                .url(apiUrl)
+                .header("User-Agent", "BondCheck/1.0")
+                .build();
 
-        private void execute() {
-            Platform.runBack(() -> {
-                String apiUrl = String.format(Locale.getDefault(),
-                        "https://nominatim.openstreetmap.org/reverse?format=json&lat=%f&lon=%f&" +
-                                "zoom=18&addressdetails=1&accept-language=%s",
-                        latitude, longitude, lang
-                );
-                try {
-                    JSONObject address = getJsonObject(apiUrl);
-                    String town = address.isNull("town") ? address.getString("city") : address.getString("town");
-                    String state = address.getString("state");
-                    String addressString = town + ", " + state;
-                    listener.onGeocodeResult(addressString);
-                } catch (Exception e) {
-                    listener.onError(e);
-                }
-            });
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new GeocodingException("Failed to fetch address: " + response.code());
+            }
+
+            String responseBody = response.body() != null ? response.body().string() : null;
+            if (responseBody == null) {
+                throw new GeocodingException("Empty response from server");
+            }
+
+            JSONObject root = new JSONObject(responseBody);
+            return root.getJSONObject("address");
+        }
+    }
+
+    private static String formatAddress(JSONObject address) {
+        String town = address.optString("town", address.optString("city", ""));
+        String state = address.optString("state", address.optString("country", ""));
+
+        if (town.isEmpty() || state.isEmpty()) {
+            throw new GeocodingException("Invalid address data received");
         }
 
-        private static @NonNull JSONObject getJsonObject(String apiUrl) throws IOException, JSONException {
-            URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        return town + ", " + state;
+    }
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-            reader.close();
+    public static class GeocodingException extends RuntimeException {
+        public GeocodingException(String message) {
+            super(message);
+        }
 
-            JSONObject root = new JSONObject(response.toString());
-            return root.getJSONObject("address");
+        public GeocodingException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }
